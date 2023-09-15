@@ -1,0 +1,32 @@
+startup --windows_enable_symlinks
+
+# fetch remote JDK for gtest
+# build --java_runtime_version=remotejdk_11
+# no coverage support needed hence no jdk needed
+build --coverage_output_generator=//:null --coverage_report_generator=//:null --coverage_support=//:null
+# Work around the sandbox issue.
+build --spawn_strategy=local
+
+build -c opt
+build --enable_platform_specific_config
+
+build --experimental_cc_implementation_deps
+
+# Work around potential issues with large command lines on windows.
+# See: https://github.com/bazelbuild/bazel/issues/5163
+build:windows --features=compiler_param_file --enable_runfiles
+build:windows --cpu=x64_windows
+build:windows --output_filter="^注意\: 包含文件\:"
+build:windows --output_filter="^cl\:.*warning D9025"
+
+build:linux --compiler=clang --features=compiler_param_file
+build:linux --repo_env=CC=clang --repo_env=CXX=clang++
+# TODO: current LLVM on Windows and Mac has a bug that generated profraw is malformed.
+build:coverage --copt "-fcoverage-mapping" --copt "-fprofile-instr-generate"
+build:coverage --linkopt "-fcoverage-mapping" --linkopt "-fprofile-instr-generate"
+build:lcov --copt "-fprofile-arcs" --copt "-ftest-coverage"
+build:lcov --linkopt "--coverage"
+build:bullseye --crosstool_top=@local_config_bullseye//:toolchain
+
+# print error test logs
+test --test_output=errors

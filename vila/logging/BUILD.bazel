@@ -1,0 +1,75 @@
+"""
+INTEL CONFIDENTIAL
+
+Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+
+The source code contained or described herein and all documents
+related to the source code ("Material") are owned by Intel Corporation
+or licensors. Title to the Material remains with Intel
+Corporation or its licensors. The Material contains trade
+secrets and proprietary and confidential information of Intel or its
+licensors. The Material is protected by worldwide copyright
+and trade secret laws and treaty provisions. No part of the Material may
+be used, copied, reproduced, modified, published, uploaded, posted,
+transmitted, distributed, or disclosed in any way without Intel's prior
+express written permission.
+
+No License under any patent, copyright, trade secret or other intellectual
+property right is granted to or conferred upon you by disclosure or
+delivery of the Materials, either expressly, by implication, inducement,
+estoppel or otherwise. Any license under such intellectual property rights
+must be express and approved by Intel in writing.
+"""
+
+load("@vila//vila/bazel/vila:vila.bzl", "vila_cc_library")
+load("@local_config_wdk//:wpp.bzl", "var_providing_rule")
+
+var_providing_rule(name = "set_wpp_vars")
+
+genrule(
+    name = "logger_tmh",
+    # when generating tmh, the file suffix has to be .cpp
+    srcs = [":logger.cpp"],
+    outs = [":logger.tmh"],
+    cmd_bat = """
+    ""$(TRACEWPP)" -dll -I"$(WPPCONFIG)" -ctl:$(GUID) -odir:"$(@D)" $<"
+""",
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    toolchains = [":set_wpp_vars"],
+    visibility = ["//visibility:private"],
+)
+
+vila_cc_library(
+    name = "logger",
+    srcs = [":logger.cpp"],
+    hdrs = [":logger.h"],
+    local_defines = select({
+        "@platforms//os:windows": {"ENABLE_WPP": "1"},
+        "//conditions:default": {},
+    }),
+    textual_hdrs = select({
+        "@platforms//os:windows": [":logger_tmh"],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@vila//clim:os",
+        "@vila//clim:reflection",
+        "@fmt",
+        "@spdlog",
+    ] + select({
+        "@platforms//os:windows": [],
+        "//conditions:default": [],
+    }),
+)
+
+vila_cc_library(
+    name = "code_location",
+    srcs = [":code_location.cc"],
+    hdrs = [":code_location.h"],
+    visibility = ["//visibility:public"],
+    deps = ["@fmt"],
+)

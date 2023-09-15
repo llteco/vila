@@ -1,0 +1,24 @@
+# Temp work dir
+.vscode/
+.VSCodeCounter/
+.pytest_cache/
+__pycache__/
+.idea/
+/.cache/
+/compile_commands.json
+!.gitkeep
+
+# Install info.
+*.egg-info/
+*.pyd
+*.dll
+*.so
+*.tmh
+dist/
+\.eggs/
+
+# Intermediate output files
+[Bb]uild
+[Bb]uild/
+/external
+/bazel-*

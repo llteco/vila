@@ -1,0 +1,103 @@
+---
+# only scan headers under `clim/`, 'vila/' and exclude `*generated.h*
+HeaderFilterRegex: '(^(vila\/.*)(?<!generated)\.h$)|(^clim\/.*\.h$)'
+# treat warning as errors for readability, bugprone and concurrency branches
+# except for `readability-function-cognitive-complexity`
+WarningsAsErrors: 'readability-*,bugprone-*,concurrency-*,-readability-function-cognitive-complexity,llvm-*'
+FormatStyle: file
+# AnalyzeTemporaryDtors is an artifact from an older clang-tidy version, notably 6 and below.
+# The corresponding option -analyze-temporary-dtors= was removed, but since a lot of people
+# do -dump-config (which dumps every option), removing AnalyzeTemporaryDtors apparently broke
+# a lot of projects with such generated .clang-tidy, so it was added back for compatibility purposes
+# https://reviews.llvm.org/rG6e76a1b1ff98b27b82689b6294cde1d355be088f.
+AnalyzeTemporaryDtors: false
+# Check list, a prefix of '-' meaning disable items, the latter item will override the former one.
+Checks: >
+    -*,
+    clang-analyzer-*,
+    readability-*,
+    -readability-braces-around-statements,
+    -readability-convert-member-functions-to-static,
+    -readability-else-after-return,
+    -readability-identifier-length,
+    -readability-implicit-bool-conversion,
+    -readability-isolate-declaration,
+    -readability-identifier-length,
+    -readability-named-parameter,
+    -readability-redundant-member-init,
+    -readability-suspicious-call-argument,
+    -readability-uppercase-literal-suffix,
+    bugprone-*,
+    -bugprone-easily-swappable-parameters,
+    -bugprone-implicit-widening-of-multiplication-result,
+    -bugprone-narrowing-conversions,
+    -bugprone-reserved-identifier,
+    -bugprone-easily-swappable-parameters,
+    misc-*,
+    -misc-const-correctness,
+    -misc-no-recursion,
+    -misc-non-private-member-variables-in-classes,
+    -misc-unused-parameters,
+    concurrency-*,
+    performance-*,
+    modernize-*,
+    -modernize-use-auto,
+    -modernize-use-nodiscard,
+    -modernize-use-trailing-return-type,
+    -modernize-use-default-member-init,
+    google-*,
+    -google-readability-braces-around-statements,
+    hicpp-*,
+    -hicpp-braces-around-statements,
+    -hicpp-no-array-decay,
+    -hicpp-signed-bitwise,
+    -hicpp-special-member-functions,
+    -hicpp-use-auto,
+    -hicpp-uppercase-literal-suffix,
+    llvm-*
+
+CheckOptions:
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.StructCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.PrivateMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PrivateMemberSuffix
+    value:           _
+  - key:             readability-identifier-naming.PublicMethodCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.ProtectedMethodCase
+    value:           camelBack
+  - key:             readability-identifier-naming.PrivateMethodCase
+    value:           camelBack
+  - key:             readability-identifier-naming.GlobalConstantCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.GlobalConstantPrefix
+    value:           k
+  - key:             readability-identifier-naming.LocalConstantCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.LocalConstantPrefix
+    value:           k
+  - key:             readability-identifier-naming.StaticConstantCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.StaticConstantPrefix
+    value:           k
+  - key:             readability-identifier-naming.ScopedEnumConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.EnumConstantCase
+    value:           UPPER_CASE
+  - key:             readability-identifier-naming.FunctionCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+  - key:             readability-braces-around-statements.ShortStatementLines
+    value:           2
+  - key:             readability-magic-numbers.IgnoreAllFloatingPointValues
+    value:           true
+  - key:             readability-magic-numbers.IgnoredIntegerValues
+    value:           0;1;2;3;4;5;6;7;8;9;10;100;255;1000
+  - key:             readability-magic-numbers.IgnorePowersOf2IntegerValues
+    value:           true
+  - key:             readability-function-cognitive-complexity.Threshold
+    value:           30

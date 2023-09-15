@@ -1,0 +1,83 @@
+"""
+Copyright (c) 2022 Intel Corporation
+Author: Wenyi Tang
+E-mail: wenyi.tang@intel.com
+
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+constraint_setting(
+    name = "target_sku",
+    default_constraint_value = ":tgllp",
+)
+
+constraint_value(
+    name = "skl",
+    constraint_setting = ":target_sku",
+)
+
+constraint_value(
+    name = "icelake",
+    constraint_setting = ":target_sku",
+)
+
+constraint_value(
+    name = "tgllp",
+    constraint_setting = ":target_sku",
+)
+
+constraint_value(
+    name = "adlp",
+    constraint_setting = ":target_sku",
+)
+
+constraint_value(
+    name = "mtl",
+    constraint_setting = ":target_sku",
+)
+
+constraint_value(
+    name = "lnl",
+    constraint_setting = ":target_sku",
+)
+
+platform(
+    name = "skylake",
+    constraint_values = [
+        "//bazel/device:skl",
+    ],
+    parents = ["@local_config_platform//:host"],
+)
+
+platform(
+    name = "tigerlake",
+    constraint_values = [
+        "//bazel/device:tgllp",
+    ],
+    parents = ["@local_config_platform//:host"],
+)
+
+platform(
+    name = "alderlake",
+    constraint_values = [
+        "//bazel/device:adlp",
+    ],
+    parents = ["@local_config_platform//:host"],
+)
+
+platform(
+    name = "meteorlake",
+    constraint_values = [
+        "//bazel/device:mtl",
+    ],
+    parents = ["@local_config_platform//:host"],
+)
+
+platform(
+    name = "lunarlake",
+    constraint_values = [
+        "//bazel/device:lnl",
+    ],
+    parents = ["@local_config_platform//:host"],
+)

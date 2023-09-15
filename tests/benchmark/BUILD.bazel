@@ -1,0 +1,75 @@
+"""
+Copyright (c) 2022 Intel Corporation
+Author: Wenyi Tang
+E-mail: wenyi.tang@intel.com
+
+"""
+
+CXX_STD = select({
+    "@platforms//os:windows": ["-std:c++17"],
+    "//conditions:default": ["-std=c++17"],
+})
+
+cc_test(
+    name = "hash_benchmark",
+    testonly = 1,
+    srcs = [":hash_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "//clim:hash",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "string_split_benchmark",
+    testonly = 1,
+    srcs = [":string_split_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "//clim:string",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "stringview_hashmap_benchmark",
+    testonly = 1,
+    srcs = [":stringview_hashmap_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "//clim:container",
+        "//clim:hash",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "ringbuffer_benchmark",
+    testonly = 1,
+    srcs = [":ringbuffer_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "//clim:container",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "container_benchmark",
+    srcs = ["container_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    deps = [
+        "@com_google_benchmark//:benchmark_main",
+        "@fmt",
+    ],
+)
