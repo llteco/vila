@@ -17,11 +17,12 @@ repos:
     hooks:
     - id: codespell
       args: [-I=.github/WORDS_BAG.txt, -w]
-      exclude: (\.(diff|patch)$|graphfile_generated.py|(.*\.bzl\.tpl))
+      exclude: (\.(diff|patch)$|graphfile_generated.py|(.*\.bzl\.tpl)|(.*json.hpp|.*json_fwd.hpp))
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v16.0.6
     hooks:
     - id: clang-format
+      exclude: (.*json.hpp|.*json_fwd.hpp)
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.2
     hooks:

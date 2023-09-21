@@ -24,6 +24,15 @@ must be express and approved by Intel in writing.
 load("//vila/bazel/vila:vila.bzl", "vila_cc_test")
 
 vila_cc_test(
+    name = "config_test",
+    srcs = ["config_test.cpp"],
+    deps = [
+        "//vila/config",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+vila_cc_test(
     name = "logger_test",
     srcs = ["logger_test.cpp"],
     deps = [
