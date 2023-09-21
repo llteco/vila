@@ -20,14 +20,17 @@
 # must be express and approved by Intel in writing.
 
 add_library(vila STATIC)
-target_sources(vila PRIVATE
-    logging/code_location.cc
-    logging/logger.cpp
-    profiling/timer.cc
-    profiling/trace.cc
-    status/status.cc
-    widget/registration_token.cc
+
+file(GLOB_RECURSE
+    VILA_SRC
+    CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 )
+
+target_sources(vila PRIVATE ${VILA_SRC})
 target_link_libraries(vila PUBLIC fmt)
 target_link_libraries(vila PRIVATE spdlog)
 add_library(vila::vila ALIAS vila)

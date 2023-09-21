@@ -40,3 +40,17 @@ config_setting(
     ],
     values = {"compiler": "clang"},
 )
+
+cc_library(
+    name = "vila",
+    deps = [
+        "@//vila/config",
+        "@//vila/graph:dag",
+        "@//vila/graph:route",
+        "@//vila/logging:logger",
+        "@//vila/profiling:timer",
+        "@//vila/profiling:tracer",
+        "@//vila/status",
+        "@//vila/widget:registration",
+    ],
+)

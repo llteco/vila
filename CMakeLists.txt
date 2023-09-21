@@ -21,8 +21,10 @@
 cmake_minimum_required(VERSION 3.18)
 
 project(vila CXX)
+include(CheckIncludeFileCXX)
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_LIST_DIR})
+
 if(MSVC)
     add_compile_options("/std:c++17")
     add_compile_definitions(
@@ -31,8 +33,19 @@ if(MSVC)
         SPDLOG_WCHAR_FILENAMES
     )
 else()
-    add_compile_options("-std=c++17")
+    add_compile_options(-std=c++17 -fPIC -frtti -fexceptions -mavx2)
+    check_include_file_cxx(filesystem STD_FS)
+    check_include_file_cxx(experimental/filesystem STD_EXP_FS)
+    if(${STD_FS})
+        add_compile_definitions(HAS_STD_FS)
+    elseif(${STD_EXP_FS})
+        add_compile_definitions(HAS_STD_EXP_FS)
+    else()
+        message(FATAL_ERROR "No c++17 feature filesystem support found")
+    endif()
+    link_libraries(stdc++fs)
 endif()
+
 add_compile_definitions(SPDLOG_FMT_EXTERNAL)
 set(SPDLOG_FMT_EXTERNAL ON CACHE BOOL "use external fmtlib" FORCE)
 
