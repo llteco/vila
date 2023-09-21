@@ -21,6 +21,7 @@ build:windows --output_filter="^cl\:.*warning D9025"
 
 build:linux --compiler=clang --features=compiler_param_file
 build:linux --repo_env=CC=clang --repo_env=CXX=clang++
+build:linux --copt="-std=c++17"
 # TODO: current LLVM on Windows and Mac has a bug that generated profraw is malformed.
 build:coverage --copt "-fcoverage-mapping" --copt "-fprofile-instr-generate"
 build:coverage --linkopt "-fcoverage-mapping" --linkopt "-fprofile-instr-generate"

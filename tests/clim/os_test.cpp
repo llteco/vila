@@ -70,7 +70,11 @@ TEST(OsPath, GetCurrentModuleDir) {
   }
   // Get current UT directory from environment
   std::string env_dir = Environ()["RUNFILES_DIR"];
+#ifdef _WIN32
   env_dir = StrReplace(env_dir + "/vila/tests/clim/", "\\", ",");
+#else
+  env_dir += "/vila/";
+#endif
   // Compare
   EXPECT_EQ(env_dir, module_str);
 }
