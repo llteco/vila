@@ -24,80 +24,92 @@
 // must after windows header
 #include <DbgHelp.h>
 
+using PSTACK_WALK64 = BOOL (*)(
+    DWORD,
+    HANDLE,
+    HANDLE,
+    LPSTACKFRAME64,
+    PVOID,
+    PREAD_PROCESS_MEMORY_ROUTINE64,
+    PFUNCTION_TABLE_ACCESS_ROUTINE64,
+    PGET_MODULE_BASE_ROUTINE64,
+    PTRANSLATE_ADDRESS_ROUTINE64
+);
+using PFROM_ADDR = BOOL (*)(HANDLE, DWORD64, PDWORD64, PSYMBOL_INFO);
+using PGET_LINE_FROM_ADDR64 =
+    int (*)(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
+using PINITIALIZE = BOOL (*)(HANDLE, PCSTR, BOOL);
+using PCLEANUP = BOOL (*)(HANDLE);
+
 class DbgHelper {
  public:
-  DbgHelper() {
-    module_ = LoadLibraryA("dbghelp.dll");
-    process_ = GetCurrentProcess();
-    thread_ = GetCurrentThread();
-    this->fnSymInitialize();
+  DbgHelper()
+      : module_(LoadLibraryA("dbghelp.dll")),
+        process_(GetCurrentProcess()),
+        thread_(GetCurrentThread()),
+        ddi_({}) {
+    initDdiTable();
+    fnSymInitialize();
   }
 
   ~DbgHelper() {
-    this->fnSymCleanup();
+    fnSymCleanup();
     FreeLibrary(module_);
   }
 
   BOOL StackWalk(LPSTACKFRAME64 stack, PVOID ctx) {
-    typedef BOOL (*func_t)(
-        DWORD, HANDLE, HANDLE, LPSTACKFRAME64, PVOID,
-        PREAD_PROCESS_MEMORY_ROUTINE64, PFUNCTION_TABLE_ACCESS_ROUTINE64,
-        PGET_MODULE_BASE_ROUTINE64, PTRANSLATE_ADDRESS_ROUTINE64
+    return ddi_.fnStackWalk(
+        IMAGE_FILE_MACHINE_AMD64, process_, thread_, stack, ctx, nullptr,
+        ddi_.fnFunctionTableAccess, ddi_.fnGetModuleBase, nullptr
     );
-    typedef PVOID (*function_table_access_t)(HANDLE, DWORD64);
-    typedef DWORD64 (*get_module_base_t)(HANDLE, DWORD64);
-    static func_t fn = (func_t)GetProcAddress(module_, "StackWalk64");
-    static function_table_access_t function_table_access =
-        (function_table_access_t
-        )GetProcAddress(module_, "SymFunctionTableAccess64");
-    static get_module_base_t get_module_base =
-        (get_module_base_t)GetProcAddress(module_, "SymGetModuleBase64");
-
-    if (fn)
-      return fn(
-          IMAGE_FILE_MACHINE_AMD64, process_, thread_, stack, ctx, nullptr,
-          function_table_access, get_module_base, nullptr
-      );
-    return 0;
   }
 
   BOOL SymFromAddr(DWORD64 addr, PDWORD64 disp, PSYMBOL_INFO sym) {
-    typedef BOOL (*func_t)(HANDLE, DWORD64, PDWORD64, PSYMBOL_INFO);
-    static func_t fn = (func_t)GetProcAddress(module_, "SymFromAddr");
-    if (fn) return fn(process_, addr, disp, sym);
-    return 0;
+    return ddi_.fnFromAddr(process_, addr, disp, sym);
   }
 
   int SymGetLineFromAddr64(DWORD64 addr, PDWORD disp, PIMAGEHLP_LINE64 line) {
-    typedef int (*func_t)(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
-    static func_t fn = (func_t)GetProcAddress(module_, "SymGetLineFromAddr64");
-    if (fn) return fn(process_, addr, disp, line);
-    return 0;
+    return ddi_.fnGetLineFromAddr(process_, addr, disp, line);
   }
 
  private:
-  BOOL fnSymInitialize() {
-    typedef BOOL (*func_t)(HANDLE, PCSTR, BOOL);
-    static func_t fn = (func_t)GetProcAddress(module_, "SymInitialize");
-    if (fn) return fn(process_, nullptr, true);
-    return 0;
+  template <class T>
+  void getAddressPointer(T*& func, const char* entry) {
+    func = reinterpret_cast<T*>(GetProcAddress(module_, entry));
   }
 
-  BOOL fnSymCleanup() {
-    typedef BOOL (*func_t)(HANDLE);
-    static func_t fn = (func_t)GetProcAddress(module_, "SymCleanup");
-    if (fn) return fn(process_);
-    return 0;
+  void initDdiTable() {
+    getAddressPointer(ddi_.fnStackWalk, "StackWalk64");
+    getAddressPointer(ddi_.fnFunctionTableAccess, "SymFunctionTableAccess64");
+    getAddressPointer(ddi_.fnGetModuleBase, "SymGetModuleBase64");
+    getAddressPointer(ddi_.fnFromAddr, "SymFromAddr");
+    getAddressPointer(ddi_.fnGetLineFromAddr, "SymGetLineFromAddr64");
+    getAddressPointer(ddi_.fnInitialize, "SymInitialize");
+    getAddressPointer(ddi_.fnCleanup, "SymCleanup");
   }
+
+  BOOL fnSymInitialize() { return ddi_.fnInitialize(process_, nullptr, true); }
+
+  BOOL fnSymCleanup() { return ddi_.fnCleanup(process_); }
+
+  struct DdiTable {
+    PSTACK_WALK64 fnStackWalk;
+    PFUNCTION_TABLE_ACCESS_ROUTINE64 fnFunctionTableAccess;
+    PGET_MODULE_BASE_ROUTINE64 fnGetModuleBase;
+    PFROM_ADDR fnFromAddr;
+    PGET_LINE_FROM_ADDR64 fnGetLineFromAddr;
+    PINITIALIZE fnInitialize;
+    PCLEANUP fnCleanup;
+  };
 
   HMODULE module_;
   HANDLE process_;
   HANDLE thread_;
+  DdiTable ddi_;
 };
 
-static DbgHelper g_dbg;
-
 std::vector<std::string> vila::CaptureBackTrace() {
+  DbgHelper dbg;
   CONTEXT context;
   RtlCaptureContext(&context);
   STACKFRAME64 stack{};
@@ -110,15 +122,15 @@ std::vector<std::string> vila::CaptureBackTrace() {
   PSYMBOL_INFO syminfo = reinterpret_cast<PSYMBOL_INFO>(sym_overlap.data());
   syminfo->SizeOfStruct = sizeof(SYMBOL_INFO);
   syminfo->MaxNameLen = kMaxNameLen;
-  for (int frame = 0;; frame++) {
+  for (;;) {
     // get next call from stack
-    if (!g_dbg.StackWalk64(&stack, &context)) break;
+    if (!dbg.StackWalk64(&stack, &context)) break;
     // get symbol name for address
     DWORD64 displacement = 0;
-    g_dbg.SymFromAddr(stack.AddrPC.Offset, &displacement, syminfo);
+    dbg.SymFromAddr(stack.AddrPC.Offset, &displacement, syminfo);
     // try to get line
     DWORD disp = 0;
-    if (g_dbg.SymGetLineFromAddr64(stack.AddrPC.Offset, &disp, &line)) {
+    if (dbg.SymGetLineFromAddr64(stack.AddrPC.Offset, &disp, &line)) {
       bt.push_back(fmt::format(
           "at {} in {}({:d}). addr {:#08x}", syminfo->Name, line.FileName,
           line.LineNumber, syminfo->Address
@@ -126,7 +138,7 @@ std::vector<std::string> vila::CaptureBackTrace() {
     } else {
       // failed to get line, at least print module name
       HMODULE mod;
-      char filename[kMaxNameLen];
+      char filename[kMaxNameLen];  // NOLINT(*-c-arrays)
       if (GetModuleHandleEx(
               GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
                   GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
@@ -140,6 +152,8 @@ std::vector<std::string> vila::CaptureBackTrace() {
       }
     }
   }
+  // skip myself
+  bt.erase(bt.begin());
   return bt;
 }
 #else

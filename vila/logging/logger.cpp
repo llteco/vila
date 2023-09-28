@@ -69,25 +69,45 @@ namespace vila {
 class LoggerImpl final : public Logger {
  public:
   LoggerImpl();
+  explicit LoggerImpl(std::string_view name);
   ~LoggerImpl();
   void Log(int level, std::string_view msg) override;
-  void Log(int level, std::string_view tag, std::string_view msg) override;
 #ifdef _WIN32
   void Log(int level, std::wstring_view msg) override;
-  void Log(int level, std::string_view tag, std::wstring_view msg) override;
 #endif
-  void Flush();
+  void Flush() {
+    if (logger_) {
+      logger_->flush();
+    }
+  }
+
+  LoggerImpl Clone(std::string_view name) {
+    LoggerImpl nested;
+    nested.name_ = fmt::format("{}.{}", name_, name);
+    nested.logger_ = logger_->clone(nested.name_);
+    if (!spdlog::get(nested.name_)) {
+      spdlog::register_logger(nested.logger_);
+    }
+    return nested;
+  }
 
  private:
+  std::string name_;
   std::shared_ptr<spdlog::logger> logger_;
 };
 
-LoggerImpl::LoggerImpl() {
+LoggerImpl::LoggerImpl() : LoggerImpl("vila") {}
+
+LoggerImpl::LoggerImpl(std::string_view name)
+    : name_(name), logger_(spdlog::get(name.data())) {
+  if (logger_) {
+    return;
+  }
   std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks;
   sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 #if defined(ENABLE_WPP) && !defined(__clang__)
   sinks.push_back(std::make_shared<wpp_sink>());
-  sinks.back()->set_pattern("[%n][%l] %v");
+  sinks.back()->set_pattern("[%l][%n] %v");
 #endif
 #ifdef _DEBUG
   std::filesystem::path url(std::filesystem::temp_directory_path());
@@ -97,8 +117,9 @@ LoggerImpl::LoggerImpl() {
   );
 #endif
   auto dsink = std::make_shared<spdlog::sinks::dist_sink_mt>(sinks);
-  logger_ = std::make_shared<spdlog::logger>("vila", dsink);
+  logger_ = std::make_shared<spdlog::logger>(name_, dsink);
   logger_->set_level(spdlog::level::trace);
+  logger_->set_pattern("[%t][%D %T.%e][%l][%n] %v");
   spdlog::register_logger(logger_);
 }
 
@@ -110,39 +131,20 @@ void LoggerImpl::Log(int level, std::string_view msg) {
   }
 }
 
-void LoggerImpl::Log(int level, std::string_view tag, std::string_view msg) {
-  if (logger_) {
-    logger_->log(
-        static_cast<spdlog::level::level_enum>(level), "[{}] {}", tag, msg
-    );
-  }
-}
 #ifdef _WIN32
 void LoggerImpl::Log(int level, std::wstring_view msg) {
   if (logger_) {
     logger_->log(static_cast<spdlog::level::level_enum>(level), L"{}", msg);
   }
 }
-
-void LoggerImpl::Log(int level, std::string_view tag, std::wstring_view msg) {
-  if (logger_) {
-    std::wstring wtag(tag.begin(), tag.end());
-    logger_->log(
-        static_cast<spdlog::level::level_enum>(level), L"[{}] {}", wtag, msg
-    );
-  }
-}
 #endif
-void LoggerImpl::Flush() {
-  if (logger_) {
-    logger_->flush();
-  }
-}
 
 /// Force to allocate the instance on startup, make sure the change on the env
 /// can take effect to the first log.
-static Logger* glogger = Logger::Get();
-static std::atomic_int glevel = Logger::LOG_LEVEL_INFO;
+namespace {
+Logger* glogger = Logger::Get();
+std::atomic_int glevel = Logger::LOG_LEVEL_INFO;
+}  // namespace
 
 template <class T>
 class ProtectWeakPtr {
@@ -179,24 +181,27 @@ struct DummyLogger final : public Logger {
   static Logger* Get() { return &instance; }
 
   void Log(int /*level*/, std::string_view /*msg*/) override {}
-
-  void Log(int /*level*/, std::string_view /*tag*/, std::string_view /*msg*/)
-      override {}
 #ifdef _WIN32
   void Log(int /*level*/, std::wstring_view /*msg*/) override {}
-
-  void Log(int /*level*/, std::string_view /*tag*/, std::wstring_view /*msg*/)
-      override {}
 #endif
   void Flush() {}
+
+  DummyLogger Clone() { return *this; }
 
   static DummyLogger instance;
 };
 
 DummyLogger DummyLogger::instance;
 
+#define _Q(a) #a
+#define Q(a)  _Q(a)
+
 Logger* Logger::Get() {
+#ifdef VILA_PROJECT_NAME
+  static std::shared_ptr<Logger> logger(new LoggerImpl(Q(VILA_PROJECT_NAME)));
+#else
   static std::shared_ptr<Logger> logger(new LoggerImpl());
+#endif
   /// Use a weak_ptr to test if the logger has been destroyed.
   static ProtectWeakPtr<Logger> protect(logger);
   auto p = protect.Acquire();
@@ -209,7 +214,21 @@ Logger* Logger::Get() {
   return p.get();
 }
 
-void Logger::Drop() {}
+#undef Q
+#undef _Q
+
+Logger* Logger::Nest(std::string_view name) {
+  static std::unordered_map<std::string, LoggerImpl> nested_loggers;
+  auto* parent = static_cast<LoggerImpl*>(this);
+  if (!parent) return nullptr;
+  if (nested_loggers.count(std::string(name))) {
+    return &nested_loggers[std::string(name)];
+  }
+  nested_loggers[std::string(name)] = parent->Clone(name);
+  return &nested_loggers[std::string(name)];
+}
+
+void Logger::Drop() { spdlog::drop_all(); }
 
 void Logger::SetLoggerLevel(int level) { glevel.store(level); }
 

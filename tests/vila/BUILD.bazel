@@ -33,6 +33,15 @@ vila_cc_test(
 )
 
 vila_cc_test(
+    name = "code_location_test",
+    srcs = ["code_location_test.cpp"],
+    deps = [
+        "//vila/logging:code_location",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+vila_cc_test(
     name = "logger_test",
     srcs = ["logger_test.cpp"],
     deps = [

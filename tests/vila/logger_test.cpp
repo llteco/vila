@@ -27,6 +27,18 @@ TEST(Logger, ConsoleWrite) {
   LOGI("This is an info log");
   LOGW("This is a warning log");
   LOGE("This is an error log");
+  VLOGT("This is a trace log");
+  VLOGD("This is a debug log");
+  VLOGI("This is an info log");
+  VLOGW("This is a warning log");
+  VLOGE("This is an error log");
+}
+
+TEST(Logger, Nest) {
+  auto* logger = vila::Logger::Get();
+  logger->Info("vila!");
+  logger->Nest("nest1")->Info("vila!!");
+  logger->Nest("nest1")->Nest("nest2")->Info("vila!!!");
 }
 
 TEST(Tracer, TraceDump) {

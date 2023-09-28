@@ -23,6 +23,10 @@ must be express and approved by Intel in writing.
 FILE: bazel options
 """
 
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+
+package(default_visibility = ["//visibility:public"])
+
 exports_files(["CPPLINT.cfg"])
 
 config_setting(
@@ -39,6 +43,26 @@ config_setting(
         "@platforms//os:linux",
     ],
     values = {"compiler": "clang"},
+)
+
+bool_flag(
+    name = "with_backtrace",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "use_backtrace",
+    flag_values = {":with_backtrace": "true"},
+)
+
+bool_flag(
+    name = "with_log",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "use_log",
+    flag_values = {":with_log": "true"},
 )
 
 cc_library(

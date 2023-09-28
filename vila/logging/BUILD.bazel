@@ -46,6 +46,10 @@ vila_cc_library(
     name = "logger",
     srcs = [":logger.cpp"],
     hdrs = [":logger.h"],
+    defines = select({
+        "@vila//vila:use_log": {"VILA_USE_LOG": "1"},
+        "//conditions:default": {},
+    }),
     local_defines = select({
         "@platforms//os:windows": {"ENABLE_WPP": "1"},
         "//conditions:default": {},
@@ -70,6 +74,10 @@ vila_cc_library(
     name = "code_location",
     srcs = [":code_location.cc"],
     hdrs = [":code_location.h"],
+    local_defines = select({
+        "@vila//vila:use_backtrace": {"VILA_USE_BACKTRACE": "1"},
+        "//conditions:default": {},
+    }),
     visibility = ["//visibility:public"],
     deps = ["@fmt"],
 )
