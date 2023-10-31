@@ -101,9 +101,10 @@ std::ostream& operator<<(std::ostream& os, ErrorCode code);
 class Status final {
  public:
   Status();
+  explicit Status(bool);
+  explicit Status(int);
   Status(ErrorCode code, std::string_view msg);
   Status(const Status&) = default;
-  Status(bool);  // NOLINT(*-explicit-constructor, *-explicit-conversions)
   Status& operator=(const Status& rhs) = default;
   Status(Status&&) noexcept;
   Status& operator=(Status&&) noexcept;

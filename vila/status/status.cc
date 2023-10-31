@@ -97,6 +97,8 @@ Status::Status(bool b) : Status() {
   code_ = b ? ErrorCode::success : ErrorCode::internal_error;
 }
 
+Status::Status(int v) : Status(v == 0) {}
+
 Status::Status(Status&& rhs) noexcept : Status(false) {
   std::swap(code_, rhs.code_);
   std::swap(rep_, rhs.rep_);
