@@ -1,9 +1,8 @@
 startup --windows_enable_symlinks
+common --enable_bzlmod
 
-# fetch remote JDK for gtest
-# build --java_runtime_version=remotejdk_11
 # no coverage support needed hence no jdk needed
-build --coverage_output_generator=//:null --coverage_report_generator=//:null --coverage_support=//:null
+# build --coverage_output_generator=//:null --coverage_report_generator=//:null --coverage_support=//:null
 # Work around the sandbox issue.
 build --spawn_strategy=local
 

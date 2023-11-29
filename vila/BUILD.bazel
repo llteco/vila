@@ -68,13 +68,13 @@ config_setting(
 cc_library(
     name = "vila",
     deps = [
-        "@//vila/config",
-        "@//vila/graph:dag",
-        "@//vila/graph:route",
-        "@//vila/logging:logger",
-        "@//vila/profiling:timer",
-        "@//vila/profiling:tracer",
-        "@//vila/status",
-        "@//vila/widget:registration",
+        "@vila//vila/config",
+        "@vila//vila/graph:dag",
+        "@vila//vila/graph:route",
+        "@vila//vila/logging:logger",
+        "@vila//vila/profiling:timer",
+        "@vila//vila/profiling:tracer",
+        "@vila//vila/status",
+        "@vila//vila/widget:registration",
     ],
 )
