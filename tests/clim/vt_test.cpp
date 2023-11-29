@@ -70,6 +70,24 @@ TEST(VtTestBasic, ReduceOp) {
   EXPECT_EQ(ReduceMean(b), 0);
 }
 
+TEST(VtTestBasic, Median) {
+  vector<int> a{1, 4, 2, 3};
+  vector<float> b{5.f, 3.f, 1.f, 4.f, 2.f};
+  vector<double> c{1, 4, 2, 3};
+  vector<double> d{1, 2, 3, 4, 5};
+  vector<double> e{6, 5, 4, 3, 2, 1};
+  EXPECT_EQ(Median(a), 2);
+  EXPECT_EQ(Median(b), 3.f);
+  EXPECT_EQ(Median(c), 2.5);
+  EXPECT_EQ(Median(d), 3);
+  EXPECT_EQ(Median(e), 3.5);
+  EXPECT_EQ(MedianMinHeap(a), 2);
+  EXPECT_EQ(MedianMinHeap(b), 3.f);
+  EXPECT_EQ(MedianMinHeap(c), 2.5);
+  EXPECT_EQ(MedianMinHeap(d), 3);
+  EXPECT_EQ(MedianMinHeap(e), 3.5);
+}
+
 TEST(VtTestBasic, Dot) {
   vector<int> a{1, 2, 3}, b{4, 5, 6};
   EXPECT_EQ(Dot(a, b), 32);

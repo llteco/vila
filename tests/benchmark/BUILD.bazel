@@ -19,6 +19,7 @@ cc_test(
     visibility = ["//visibility:private"],
     deps = [
         "//clim:hash",
+        "//clim:os",
         "@com_google_benchmark//:benchmark_main",
     ],
 )
@@ -46,6 +47,7 @@ cc_test(
     deps = [
         "//clim:container",
         "//clim:hash",
+        "//clim:os",
         "@com_google_benchmark//:benchmark_main",
     ],
 )
@@ -71,5 +73,16 @@ cc_test(
     deps = [
         "@com_google_benchmark//:benchmark_main",
         "@fmt",
+    ],
+)
+
+cc_test(
+    name = "vt_speed_benchmark",
+    srcs = ["vt_speed_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    deps = [
+        "//clim:vt",
+        "@com_google_benchmark//:benchmark_main",
     ],
 )

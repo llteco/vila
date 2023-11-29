@@ -28,6 +28,7 @@
 #include <functional>
 #include <iterator>
 #include <limits>
+#include <queue>
 #include <random>
 #include <stdexcept>
 #include <utility>
@@ -263,6 +264,79 @@ typename Container::value_type ReduceMin(const Container& a) {
     min = std::min(v, min);
   }
   return min;
+}
+
+/** @brief median value of vector */
+template <class Container>
+typename Container::value_type MedianMinHeap(const Container& a) {
+  using T = typename Container::value_type;
+  if (a.empty()) {
+    return {};
+  }
+  /// Median value by min heap (priority queue)
+  /// time: O(nlogn)
+  /// mem: O(n)
+  std::priority_queue<T> heap(a.begin(), a.begin() + a.size() / 2 + 1);
+  for (size_t i = heap.size(); i < a.size(); i++) {
+    if (a[i] < heap.top()) {
+      heap.pop();
+      heap.push(a[i]);
+    }
+  }
+  if (a.size() % 2 == 1) {
+    return heap.top();
+  }
+  T t = heap.top();
+  heap.pop();
+  return (heap.top() + t) / static_cast<T>(2);
+}
+
+/** @brief median value of vector */
+template <class Container>
+typename Container::value_type Median(const Container& a) {
+  using T = typename Container::value_type;
+  if (a.empty()) {
+    return {};
+  }
+  /// Median value by quick sort (half sort)
+  /// time: O(nlogn)
+  /// mem: O(n)
+  Container b = a;
+  auto sort = [&b](size_t i, size_t j) {
+    T x = b[i];
+    while (i < j) {
+      while (i < j && x <= b[j]) {
+        j--;
+      }
+      if (i < j) {
+        b[i++] = b[j];
+      }
+      while (i < j && x >= b[i]) {
+        i++;
+      }
+      if (i < j) {
+        b[j--] = b[i];
+      }
+    }
+    b[i] = x;
+    return i;
+  };
+
+  size_t i = 0, j = b.size() - 1;
+  size_t idx = sort(i, j);
+  while (idx != a.size() / 2) {
+    if (idx < a.size() / 2) {
+      i = idx + 1;
+      idx = sort(i, j);
+    } else {
+      j = idx - 1;
+      idx = sort(i, j);
+    }
+  }
+  if (a.size() % 2 == 1) {
+    return b[idx];
+  }
+  return (b[idx - 1] + b[idx]) / static_cast<T>(2);
 }
 
 /** @brief dot product of vector `a` and `b` */

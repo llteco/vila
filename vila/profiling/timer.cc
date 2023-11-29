@@ -82,11 +82,12 @@ void Profiler::ProfilerImpl::PrintAnalyze() const {
     const auto& ds = event.second;
     auto avg = vt::ReduceMean(ds) / 1e6;
     auto std = sqrt(vt::ReduceVar(ds)) / 1e6;
+    auto med = numeric_div<double>(vt::Median(ds), 1e6);
     auto longest = numeric_div<double>(vt::ReduceMax(ds), 1e6);
     auto shortest = numeric_div<double>(vt::ReduceMin(ds), 1e6);
     LOGI(
-        "{}: AVG={:.2f} STD={:.2} MAX={:.2f} MIN={:.2f} CALL={}", event.first,
-        avg, std, longest, shortest, ds.size()
+        "{}: MED={:.2f} AVG={:.2f} STD={:.2} MAX={:.2f} MIN={:.2f} CALL={}",
+        event.first, med, avg, std, longest, shortest, ds.size()
     );
   }
 }
