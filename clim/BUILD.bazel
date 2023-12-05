@@ -57,7 +57,14 @@ cc_library(
         ":barrier.h",
         ":linux_memcpy_s.h",
         ":os.h",
+    ],
+)
+
+cc_library(
+    name = "path",
+    hdrs = [
         ":os_path.h",
+        ":path.h",
     ],
     defines = select({
         "@platforms//os:windows": [],

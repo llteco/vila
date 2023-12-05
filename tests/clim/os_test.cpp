@@ -24,57 +24,8 @@
 
 #include <gtest/gtest.h>
 
-#include <fstream>
-
-#include "clim/os_path.h"
-#include "clim/str_replace.h"
-
-namespace fs = std::filesystem;
-
 TEST(Os, GetEnv) {
   for (const auto& [k, v] : Environ()) {
     std::cout << k << "=" << v << std::endl;
   }
-}
-
-TEST(OsPath, Glob) {
-  // make test file
-  auto dir = fs::temp_directory_path() / "clim_test";
-  fs::create_directory(dir);
-  fs::create_directory(dir / "subdir");
-  std::ofstream(dir / "a.foo").write("a", 1);
-  std::ofstream(dir / "subdir/b.foo").write("a", 1);
-  std::ofstream(dir / "c.bar").write("a", 1);
-  std::ofstream(dir / "subdir/d.bar").write("a", 1);
-  std::ofstream(dir / "e.foobar").write("a", 1);
-  std::ofstream(dir / "subdir/h").write("a", 1);
-  auto ans = Glob(dir / "*");
-  EXPECT_EQ(ans.size(), 3);
-  ans = Glob(dir / "*", true);
-  EXPECT_EQ(ans.size(), 6);
-  ans = Glob(dir / "*.foo", true);
-  EXPECT_EQ(ans.size(), 2);
-  ans = Glob(dir / "*.b??");
-  EXPECT_EQ(ans.size(), 1);
-  ans = Glob(dir / "**/*.bar");
-  EXPECT_EQ(ans.size(), 2);
-  fs::remove_all(dir);
-}
-
-TEST(OsPath, GetCurrentModuleDir) {
-  // Get current UT directory from GetCurrentModuleDir
-  fs::path module_dir = GetCurrentModuleDir();
-  std::string module_str = StrReplace(module_dir.string(), "\\", "/");
-  if (Environ().count("RUNFILES_DIR") == 0) {
-    GTEST_SKIP() << "not run from bazel test";
-  }
-  // Get current UT directory from environment
-  std::string env_dir = Environ()["RUNFILES_DIR"];
-#ifdef _WIN32
-  env_dir = StrReplace(env_dir + "/vila/tests/clim/", "\\", ",");
-#else
-  env_dir += "/vila/";
-#endif
-  // Compare
-  EXPECT_EQ(env_dir, module_str);
 }

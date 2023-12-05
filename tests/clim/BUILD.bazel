@@ -103,6 +103,16 @@ cc_test(
 )
 
 cc_test(
+    name = "path_test",
+    srcs = [":path_test.cpp"],
+    copts = CXX_STD,
+    deps = [
+        "//clim:path",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "ringbuffer_test",
     srcs = ["ringbuffer_test.cpp"],
     copts = CXX_STD,
