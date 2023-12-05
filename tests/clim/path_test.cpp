@@ -54,7 +54,7 @@ TEST(OsPath, GetCurrentModuleDir) {
   // Get current UT directory from GetCurrentModuleDir
   GetCurrentModuleDir();
 }
-
+#ifdef _WIN32
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(PathTest, WindowsStyle) {
   Path abs(R"(C:\Users\Vila\do_not_exist.log)");
@@ -96,7 +96,7 @@ TEST(PathTest, WindowsStyle) {
   EXPECT_EQ(Path(R"(C:\)") / rel / Path("do_not_exist.log"), abs);
   EXPECT_EQ(Path("C:/").Parent(), Path("C:/"));
 }
-
+#else   // WIN32
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(PathTest, PoxisStyle) {
   Path abs(R"(/home/Vila/do_not_exist.log)");
@@ -117,10 +117,8 @@ TEST(PathTest, PoxisStyle) {
   EXPECT_FALSE(rel.IsSocket());
   EXPECT_FALSE(abs.IsSymlink());
   EXPECT_FALSE(rel.IsSymlink());
-#ifndef _WIN32
   EXPECT_EQ(abs.Absolute(), abs);
   EXPECT_EQ(rel.Absolute(), Path::CWD() / rel);
-#endif
   EXPECT_EQ(abs.AsPosix(), R"(/home/Vila/do_not_exist.log)");
   EXPECT_EQ(rel.AsPosix(), R"(home/Vila)");
   EXPECT_EQ(abs.AsUri(), R"(file:///home/Vila/do_not_exist.log)");
@@ -140,3 +138,4 @@ TEST(PathTest, PoxisStyle) {
   EXPECT_EQ(Path("/") / rel / Path("do_not_exist.log"), abs);
   EXPECT_EQ(Path("/"), Path("/"));
 }
+#endif  // WIN32

@@ -93,7 +93,8 @@ static void BM_stringview_hash_map_iteration(benchmark::State& state) {
   }
   for (auto _ : state) {
     for (auto& value : maps) {
-      benchmark::DoNotOptimize(value);
+      auto v = value.second;
+      benchmark::DoNotOptimize(v);
     }
   }
 }
@@ -107,7 +108,8 @@ static void BM_std_map_iteration(benchmark::State& state) {
   }
   for (auto _ : state) {
     for (auto& value : maps) {
-      benchmark::DoNotOptimize(value);
+      auto v = value.second;
+      benchmark::DoNotOptimize(v);
     }
   }
 }

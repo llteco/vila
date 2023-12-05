@@ -1,0 +1,31 @@
+name: build vila package by cmake
+run-name: ${{ github.actor }} build using CMake tool
+on:
+  pull_request:
+    paths:
+      - 'clim/**'
+      - 'vila/**'
+      - '**/CMakeLists.txt'
+jobs:
+  build-vila-cmake:
+    runs-on: [self-hosted, Linux]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: lfs fetch
+        run: git submodule foreach --recursive git lfs pull
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: download cmake
+        run: |
+          python -m pip install -U cmake ninja
+          cmake --version
+          ninja --version
+      - name: build package
+        run: |
+          mkdir build
+          cmake -Bbuild -S. -GNinja
+          cmake --build build --config Release

@@ -1,0 +1,28 @@
+name: build vila package
+run-name: ${{ github.actor }} build and test
+on:
+  pull_request:
+    paths:
+      - 'clim/**'
+      - 'vila/**'
+      - 'tests/**'
+      - '*.bazel'
+jobs:
+  build-vila:
+    runs-on: [self-hosted, Linux]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: lfs fetch
+        run: git submodule foreach --recursive git lfs pull
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: download bazel
+        run: |
+          wget https://github.com/bazelbuild/bazel/releases/download/6.4.0/bazel-6.4.0-linux-x86_64
+          chmod +x bazel-6.4.0-linux-x86_64
+      - name: build and test package
+        run: ./bazel-6.4.0-linux-x86_64 test //tests/...

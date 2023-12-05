@@ -61,6 +61,7 @@ vila_cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "@vila//clim:os",
+        "@vila//clim:path",
         "@vila//clim:reflection",
         "@fmt",
         "@spdlog",
