@@ -145,6 +145,7 @@ cc_library(
         ":hash",
         ":math",
         ":os",
+        ":path",
         ":reflection",
         ":string",
         ":vt",

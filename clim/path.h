@@ -176,10 +176,8 @@ class Path {
   /**
    * @brief Make the path absolute, resolving all symlinks on the way and also
    * normalizing it.
-   *
-   * @param strict
    */
-  Path Resolve(bool strict = false) const {
+  Path Resolve() const {
     Path path(std::filesystem::read_symlink(path_));
     if (IsAbsolute()) {
       return path;
