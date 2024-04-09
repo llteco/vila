@@ -121,3 +121,48 @@ TEST(Argparse, NargsNumber) {
   EXPECT_EQ(parser.Parse(3, argv)["foo"][0].AsLong(), 1);
   EXPECT_EQ(parser.Parse(3, argv)["foo"][1].AsLong(), 2);
 }
+
+TEST(Argparse, ParseDict) {
+  std::map<std::string, std::string> dict = {
+      {"foo", "bar"},
+      {"baz", "qux"}
+  };
+  ArgumentParser parser;
+  parser.AddArgument("--foo");
+  parser.AddArgument("--baz");
+  auto args = parser.ParseDict(dict);
+  EXPECT_EQ(args["foo"].AsStr(), "bar");
+  EXPECT_EQ(args["baz"].AsStr(), "qux");
+}
+
+TEST(Argparse, ParseDictPositionArgs) {
+  std::map<std::string, std::string> dict = {
+      {"", "bar;baz"},
+  };
+  ArgumentParser parser;
+  parser.AddArgument("pos1");
+  parser.AddArgument("pos2");
+  auto args = parser.ParseDict(dict);
+  EXPECT_EQ(args["pos1"].AsStr(), "bar");
+  EXPECT_EQ(args["pos2"].AsStr(), "baz");
+}
+
+TEST(Argparse, ParseDictWithError) {
+  std::map<std::string, std::string> dict = {
+      {"foo", "bar"},
+      {"baz", "qux"}
+  };
+  ArgumentParser parser;
+  parser.AddArgument("--foo");
+  EXPECT_THROW(parser.ParseDict(dict), ParseError);
+}
+
+TEST(Argparse, ParseDictPositionArgsWithError) {
+  std::map<std::string, std::string> dict = {
+      {"__POS__", "bar;baz"},
+  };
+  ArgumentParser parser;
+  parser.AddArgument("pos1");
+  // For now unknown positional args are ignored
+  EXPECT_NO_THROW(parser.ParseDict(dict));
+}

@@ -255,6 +255,8 @@ class Argument {
  */
 class ArgumentParser {
  public:
+  using Arguments = std::map<std::string, Argument>;
+
   explicit ArgumentParser(std::string_view prog) : prog_(prog) {
     args_.emplace_back("--help");
     args_.back().StoreTrue().WithHelp("Show this message");
@@ -294,10 +296,10 @@ class ArgumentParser {
    * @return a tuple of two maps, where the 1st one is the known arguments
    *   and the second one is the unknown arguments.
    */
-  std::
-      tuple<std::map<std::string, Argument>, std::map<std::string, std::string>>
-      ParseKnown(int argc, const char* const* argv) {
-    std::map<std::string, Argument> args;
+  std::tuple<Arguments, std::map<std::string, std::string>> ParseKnown(
+      int argc, const char* const* argv
+  ) {
+    Arguments args;
     std::map<std::string, std::string> unknown_args;
     for (auto& known_args : args_) {
       args[known_args.name_] = known_args;
@@ -324,6 +326,37 @@ class ArgumentParser {
     throw ParseError(err_msg);
   }
 
+  Arguments ParseDict(const std::map<std::string, std::string>& dict) {
+    std::vector<std::string> args{"__PROGRAM__"};
+    for (auto&& [key, value] : dict) {
+      if (key.empty() || key == "__POS__") {
+        if (!value.empty()) {
+          for (const auto& v : StrSplit(value, ";")) {
+            args.emplace_back(v);
+          }
+        }
+        continue;
+      }
+      args.emplace_back("--" + key);
+      if (!value.empty()) {
+        args.emplace_back(value);
+      }
+    }
+    const char** argv = new const char*[args.size()];
+    int i = 0;
+    for (const auto& arg : args) {
+      argv[i++] = arg.c_str();
+    }
+    std::string error;
+    try {
+      return Parse(static_cast<int>(args.size()), argv);
+    } catch (const std::exception& ex) {
+      error = ex.what();
+    }
+    delete[] argv;
+    throw ParseError(error);
+  }
+
   /**
    * @brief Parse the command line to argument map.
    *
@@ -331,9 +364,9 @@ class ArgumentParser {
    *
    * @param argc: counts of args
    * @param argv: value of args
-   * @return std::map<std::string, Argument> the map of defined arguments
+   * @return Arguments the map of defined arguments
    */
-  std::map<std::string, Argument> Parse(int argc, const char* const* argv) {
+  Arguments Parse(int argc, const char* const* argv) {
     auto&& [args, unkonwn_args] = ParseKnown(argc, argv);
     if (!args["help"].None()) {
       PrintHelp();

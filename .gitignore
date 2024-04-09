@@ -7,6 +7,7 @@ __pycache__/
 /.cache/
 /compile_commands.json
 !.gitkeep
+MODULE.bazel.lock
 
 # Install info.
 *.egg-info/

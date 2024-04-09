@@ -46,25 +46,25 @@ def workspace():
     http_archive(
         name = "fmt",
         build_file = "@vila//vila/bazel:fmt.BUILD",
-        sha256 = "ede1b6b42188163a3f2e0f25ad5c0637eca564bd8df74d02e31a311dd6b37ad8",
-        strip_prefix = "fmt-10.0.0",
-        url = "https://github.com/fmtlib/fmt/archive/refs/tags/10.0.0.tar.gz",
+        sha256 = "1250e4cc58bf06ee631567523f48848dc4596133e163f02615c97f78bab6c811",
+        strip_prefix = "fmt-10.2.1",
+        url = "https://github.com/fmtlib/fmt/archive/refs/tags/10.2.1.tar.gz",
     )
 
     # https://github.com/gabime/spdlog/releases
     http_archive(
         name = "spdlog",
         build_file = "@vila//vila/bazel:spdlog.BUILD",
-        sha256 = "4dccf2d10f410c1e2feaff89966bfc49a1abb29ef6f08246335b110e001e09a9",
-        strip_prefix = "spdlog-1.12.0",
-        url = "https://github.com/gabime/spdlog/archive/refs/tags/v1.12.0.tar.gz",
+        sha256 = "534f2ee1a4dcbeb22249856edfb2be76a1cf4f708a20b0ac2ed090ee24cfdbc9",
+        strip_prefix = "spdlog-1.13.0",
+        url = "https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.tar.gz",
     )
 
     # Hedron's Compile Commands Extractor for Bazel
     # https://github.com/hedronvision/bazel-compile-commands-extractor
     http_archive(
         name = "hedron_compile_commands",
-        sha256 = "a9c0cc7ef31227e5a68b688094033b93e67074e139b8d4262597ea75b72a06c4",
-        strip_prefix = "bazel-compile-commands-extractor-aaa2fda89b40e89afa2130b41b56eb839a769be5",
-        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/aaa2fda89b40e89afa2130b41b56eb839a769be5.zip",
+        sha256 = "9c4ce757e0e53f8d69283968263cdee98d8f711191da3bdaa94875ea3ad8b601",
+        strip_prefix = "bazel-compile-commands-extractor-f56c9e944474fc3a6aade106ff44a372ab8c84d2",
+        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/f56c9e944474fc3a6aade106ff44a372ab8c84d2.zip",
     )

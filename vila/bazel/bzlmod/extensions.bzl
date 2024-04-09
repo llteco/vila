@@ -27,13 +27,15 @@ load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configu
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def load_spdlog(ctx):
+    spdlog_version = "1.13.0"
+
     # https://github.com/gabime/spdlog/releases
     http_archive(
         name = "spdlog",
         build_file = "@vila//vila/bazel:spdlog.BUILD",
-        sha256 = "4dccf2d10f410c1e2feaff89966bfc49a1abb29ef6f08246335b110e001e09a9",
-        strip_prefix = "spdlog-1.12.0",
-        url = "https://github.com/gabime/spdlog/archive/refs/tags/v1.12.0.tar.gz",
+        sha256 = "534f2ee1a4dcbeb22249856edfb2be76a1cf4f708a20b0ac2ed090ee24cfdbc9",
+        strip_prefix = "spdlog-%s" % spdlog_version,
+        url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
     )
 
 def load_hedron(ctx):
@@ -41,9 +43,9 @@ def load_hedron(ctx):
     # https://github.com/hedronvision/bazel-compile-commands-extractor
     http_archive(
         name = "hedron_compile_commands",
-        sha256 = "a9c0cc7ef31227e5a68b688094033b93e67074e139b8d4262597ea75b72a06c4",
-        strip_prefix = "bazel-compile-commands-extractor-aaa2fda89b40e89afa2130b41b56eb839a769be5",
-        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/aaa2fda89b40e89afa2130b41b56eb839a769be5.zip",
+        sha256 = "9c4ce757e0e53f8d69283968263cdee98d8f711191da3bdaa94875ea3ad8b601",
+        strip_prefix = "bazel-compile-commands-extractor-f56c9e944474fc3a6aade106ff44a372ab8c84d2",
+        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/f56c9e944474fc3a6aade106ff44a372ab8c84d2.zip",
     )
 
 spdlog_extension = module_extension(
