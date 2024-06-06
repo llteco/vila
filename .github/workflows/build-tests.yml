@@ -8,7 +8,7 @@ on:
       - 'tests/**'
       - '*.bazel'
 jobs:
-  build-vila:
+  test-vila:
     runs-on: [self-hosted, Linux]
     steps:
       - uses: actions/checkout@v4
@@ -26,3 +26,9 @@ jobs:
           chmod +x bazel-6.4.0-linux-x86_64
       - name: build and test package
         run: ./bazel-6.4.0-linux-x86_64 test //tests/...
+      - name: Clean up bazel
+        run: rm bazel-6.4.0-linux-x86_64
+      - name: Install vila python package
+        run: python -m pip install -e python[test]
+      - name: Test vila python package
+        run: python -m pytest --cov=python/vila python/tests

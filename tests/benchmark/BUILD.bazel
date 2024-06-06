@@ -86,3 +86,13 @@ cc_test(
         "@com_google_benchmark//:benchmark_main",
     ],
 )
+
+cc_test(
+    name = "pimpl_benchmark",
+    srcs = ["pimpl_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    deps = [
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)

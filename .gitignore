@@ -8,6 +8,7 @@ __pycache__/
 /compile_commands.json
 !.gitkeep
 MODULE.bazel.lock
+.coverage
 
 # Install info.
 *.egg-info/
@@ -23,3 +24,4 @@ dist/
 [Bb]uild/
 /external
 /bazel-*
+htmlcov/

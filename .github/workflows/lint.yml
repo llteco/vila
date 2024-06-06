@@ -6,16 +6,17 @@ on:
       - 'clim/**'
       - 'vila/**'
       - 'tests/**'
+      - 'python/**'
 jobs:
   run-pre-commit:
-    runs-on: [self-hosted, Linux]
+    runs-on: [self-hosted]
     strategy:
       matrix:
         python-version: ["3.11"]
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 10
+          fetch-depth: 2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -26,4 +27,4 @@ jobs:
           pre-commit install --install-hooks
       - name: lint with pre-commit
         # check all commits from main
-        run: pre-commit run -s HEAD~9 -o HEAD
+        run: pre-commit run -s HEAD^ -o HEAD
