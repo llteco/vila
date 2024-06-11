@@ -82,8 +82,9 @@ class Path {
    * @brief Iterate over this subtree and yield all existing files (of any
    * kind, including directories) matching the given relative pattern.
    */
-  std::vector<std::filesystem::path> Glob(std::string_view pattern) const {
-    return ::Glob(pattern);
+  std::vector<Path> Glob(std::string_view pattern) const {
+    auto results = ::Glob(path_ / pattern);
+    return std::vector<Path>{results.cbegin(), results.cend()};
   }
 
   /**
@@ -190,8 +191,9 @@ class Path {
    * directories) matching the given relative pattern, anywhere in
    * this subtree.
    */
-  std::vector<std::filesystem::path> RGlob(std::string_view pattern) const {
-    return ::Glob(pattern, true);
+  std::vector<Path> RGlob(std::string_view pattern) const {
+    auto results = ::Glob(path_ / pattern, true);
+    return std::vector<Path>{results.cbegin(), results.cend()};
   }
 
   /**
@@ -246,6 +248,8 @@ class Path {
 
   Path operator/(const Path& path) const { return Path(path_ / path.path_); }
 
+  Path operator/(std::string_view path) const { return Path(path_ / path); }
+
   Path& operator/=(const Path& path) {
     path_ /= path.path_;
     return *this;
@@ -258,7 +262,12 @@ class Path {
 
   bool operator==(const Path& other) const { return path_ == other.path_; }
 
-  bool operator!=(const Path& other) const { return path_ != other.path_; }
+  bool operator==(std::string_view other) const { return path_ == other; }
+
+  template <class T>
+  bool operator!=(const T& other) const {
+    return !(this->operator==(other));
+  }
 
   friend std::ostream& operator<<(std::ostream& os, const Path& path) {
     return os << path.path_;

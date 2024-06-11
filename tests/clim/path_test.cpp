@@ -139,3 +139,28 @@ TEST(PathTest, PoxisStyle) {
   EXPECT_EQ(Path("/"), Path("/"));
 }
 #endif  // WIN32
+
+TEST(PathTest, Extensions) {
+  Path multi_ext("a.b.c.f.e.d");
+  EXPECT_EQ(multi_ext.Suffix(), ".d");
+  EXPECT_EQ(Path(multi_ext.Stem()).Suffix(), ".e");
+}
+
+TEST(PathTest, RGlob) {
+  auto dir = fs::temp_directory_path() / "clim_test";
+  fs::create_directory(dir);
+  fs::create_directory(dir / "subdir");
+  std::ofstream(dir / "a.foo").write("a", 1);
+  std::ofstream(dir / "subdir/b.foo").write("a", 1);
+  std::ofstream(dir / "c.bar").write("a", 1);
+  std::ofstream(dir / "subdir/d.bar").write("a", 1);
+  std::ofstream(dir / "e.foobar").write("a", 1);
+  std::ofstream(dir / "subdir/h").write("a", 1);
+  Path f(dir);
+  EXPECT_EQ(
+      f.Glob("*.foo|*.bar"), std::vector<Path>({f / "a.foo", f / "c.bar"})
+  );
+  EXPECT_EQ(
+      f.RGlob("*.foo"), std::vector<Path>({f / "a.foo", f / "subdir/b.foo"})
+  );
+}
