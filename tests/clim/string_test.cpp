@@ -39,6 +39,10 @@ TEST(String, SplitTest) {
   EXPECT_EQ(StrSplit("", ""), std::vector<std::string>()) << "empty sep";
   EXPECT_EQ(StrSplit("abc", ""), std::vector<std::string>({"abc"}))
       << "empty sep";
+  EXPECT_EQ(
+      StrSplitStringView("1,2,3,4", ','),
+      std::vector<std::string_view>({"1", "2", "3", "4"})
+  ) << "single char sep";
 }
 
 TEST(String, ReplaceTest) {

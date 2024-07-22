@@ -46,3 +46,13 @@ static void BM_split_stringview(benchmark::State& state) {
 }
 
 BENCHMARK(BM_split_stringview)->Range(1, 100000);
+
+static void BM_split_stringview_by_char(benchmark::State& state) {
+  std::string str = MakeString(state.range(0));
+  for (auto _ : state) {
+    auto v = StrSplitStringView(str, ';');
+    benchmark::DoNotOptimize(v);
+  }
+}
+
+BENCHMARK(BM_split_stringview_by_char)->Range(1, 100000);

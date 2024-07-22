@@ -144,14 +144,9 @@ inline std::vector<std::filesystem::path> Glob(
 
 inline std::string GetCurrentModuleDir() {
   char bin_dir[256] = {0};  // NOLINT
-  HMODULE caller_module = nullptr;
-  void* caller_address = _ReturnAddress();
-  // GetModuleHandleEx from return address
-  if (!GetModuleHandleEx(
-          GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)caller_address,
-          &caller_module
-      )) {
-    return std::string("GetModuleHandleEx_failed");
+  HMODULE caller_module = GetModuleHandle(nullptr);
+  if (!caller_module) {
+    return std::string("GetModuleHandle_failed");
   }
   // Get module file path
   if (GetModuleFileNameA(caller_module, bin_dir, sizeof(bin_dir)) == 0) {

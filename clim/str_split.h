@@ -22,10 +22,10 @@
 #include <vector>
 
 /**
- * @brief splitting string with a separate character
+ * @brief splitting string with a separate string
  *
  * @param s: input string
- * @param sep: a separate character
+ * @param sep: a separate string
  * @return a list of separated string
  */
 inline std::vector<std::string_view> StrSplitStringView(
@@ -37,6 +37,7 @@ inline std::vector<std::string_view> StrSplitStringView(
   std::string_view substr = s;
   if (s.empty()) return ret;
   if (sep.empty()) return {s};
+  ret.reserve(2);
   while (!substr.empty()) {
     auto pos = substr.find(sep, 0);
     if (pos > substr.size()) {
@@ -45,6 +46,34 @@ inline std::vector<std::string_view> StrSplitStringView(
     }
     ret.emplace_back(substr.data(), pos);
     substr = substr.substr(pos + sep.size());
+  }
+  return ret;
+}
+
+/**
+ * @brief splitting string with a separate character, faster version
+ *
+ * @param s: input string
+ * @param sep: a separate character
+ * @return a list of separated string
+ */
+inline std::vector<std::string_view> StrSplitStringView(
+    std::string_view s, char sep
+) {
+  // output has to allocate real buffer because input string view
+  // may be an rvalue.
+  std::vector<std::string_view> ret;
+  std::string_view substr = s;
+  if (s.empty()) return ret;
+  ret.reserve(2);
+  while (!substr.empty()) {
+    auto pos = substr.find(sep, 0);
+    if (pos > substr.size()) {
+      ret.push_back(substr);
+      break;
+    }
+    ret.emplace_back(substr.data(), pos);
+    substr = substr.substr(pos + 1);
   }
   return ret;
 }
