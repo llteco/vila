@@ -60,6 +60,14 @@ def workspace():
         url = "https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.tar.gz",
     )
 
+    # # https://github.com/abseil/abseil-cpp/releases
+    # http_archive(
+    #     name = "abseil-cpp",
+    #     integrity = "sha256-czcmuMOm05pBINfkXqi0GkNM2s3kAculAPFCNsSbOdw=",
+    #     strip_prefix = "abseil-cpp-20240116.2",
+    #     url = "https://github.com/abseil/abseil-cpp/archive/refs/tags/20240116.2.tar.gz",
+    # )
+
     # Hedron's Compile Commands Extractor for Bazel
     # https://github.com/hedronvision/bazel-compile-commands-extractor
     http_archive(

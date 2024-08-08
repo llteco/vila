@@ -25,6 +25,8 @@ include(CheckIncludeFileCXX)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+option(VILA_ENABLE_TESTING "Enable testing" OFF)
+
 if(MSVC)
     add_compile_options("/std:c++17")
     add_compile_definitions(
@@ -57,3 +59,9 @@ add_library(vila::clim ALIAS clim)
 add_subdirectory(fmt)
 add_subdirectory(spdlog)
 add_subdirectory(vila)
+
+if(VILA_ENABLE_TESTING)
+    enable_testing()
+    find_package(GTest REQUIRED)
+    add_subdirectory(tests)
+endif()
