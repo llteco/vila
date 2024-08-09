@@ -22,6 +22,7 @@ must be express and approved by Intel in writing.
 """
 
 load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
+load("@vila//vila/bazel/toolchains:icpx_cc_configure.bzl", "icpx_configure")
 load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def workspace():
@@ -33,3 +34,13 @@ def workspace():
 
     # Get WDK package
     wdk_configure(name = "local_config_wdk")
+
+    # Get oneAPI DPC++ compiler
+    icpx_configure(name = "local_config_icpx")
+
+    # After bazel 6.4:
+    # Comment out the following line to use the icpx toolchain.
+    # For extra copt needed for icpx, it is convenient to specify '--config=icpx'
+    # native.register_toolchains("@local_config_icpx//:cc-toolchain-x64_windows")
+
+    # native.register_toolchains("@local_config_bullseye//:cc-toolchain-x64_windows")

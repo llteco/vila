@@ -41,8 +41,16 @@ use_repo(wdk_config_ext, "local_config_wdk")
 bullseye_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "bullseye_configure_extension")
 use_repo(bullseye_config_ext, "local_config_bullseye")
 
+# register_toolchains("@local_config_bullseye//:cc-toolchain-x64_windows")
+
 spdlog_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "spdlog_extension")
 use_repo(spdlog_ext, "spdlog")
 
 hedron_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "hedron_extension")
 use_repo(hedron_ext, "hedron_compile_commands")
+
+icpx_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "icpx_configure_extension")
+use_repo(icpx_config_ext, "local_config_icpx")
+
+# Comment out the following line to use the icpx compiler on Windows
+# register_toolchains("@local_config_icpx//:cc-toolchain-x64_windows")

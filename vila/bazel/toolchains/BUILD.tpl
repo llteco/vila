@@ -6,7 +6,7 @@ E-mail: wenyi.tang@intel.com
 custom cc toolchains
 """
 
-load("@local_config_cc//:windows_cc_toolchain_config.bzl", "cc_toolchain_config")
+load("@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl", "cc_toolchain_config")
 
 package(default_visibility = ["//visibility:public"])
 

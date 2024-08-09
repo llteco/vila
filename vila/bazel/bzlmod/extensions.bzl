@@ -21,10 +21,11 @@ estoppel or otherwise. Any license under such intellectual property rights
 must be express and approved by Intel in writing.
 """
 
-load("@pybind11_bazel//:python_configure.bzl", "python_configure")
-load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
-load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
+load("@vila//vila/bazel/toolchains:icpx_cc_configure.bzl", "icpx_configure")
+load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def load_spdlog(ctx):
     spdlog_version = "1.13.0"
@@ -66,4 +67,8 @@ wdk_configure_extension = module_extension(
 
 bullseye_configure_extension = module_extension(
     implementation = lambda ctx: bullseye_configure(name = "local_config_bullseye"),
+)
+
+icpx_configure_extension = module_extension(
+    implementation = lambda ctx: icpx_configure(name = "local_config_icpx"),
 )
