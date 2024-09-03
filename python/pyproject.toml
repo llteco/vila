@@ -31,7 +31,7 @@ authors = [{ name = "Wenyi Tang", email = "wenyi.tang@intel.com" }]
 license = { file = "LICENSE" }
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
-dependencies = []
+dependencies = ["numpy"]
 
 [project.urls]
 Home = "https://github.com/intel-innersource/frameworks.camera.cpp.vila"

@@ -11,6 +11,7 @@ load(
     "CXX_STD_17",
     "DEFAULT_COPTS",
     "DEFAULT_LINKOPTS",
+    "UNICODE",
 )
 
 def vila_cc_library(name, **kwargs):
@@ -42,7 +43,7 @@ def vila_cc_test(name, **kwargs):
         name: pass to the library name.
         **kwargs: pass other arguments.
     """
-    kwargs["copts"] = CXX_STD_17 + kwargs.get("copts", [])
+    kwargs["copts"] = CXX_STD_17 + UNICODE + kwargs.get("copts", [])
     kwargs["linkopts"] = DEFAULT_LINKOPTS + kwargs.get("linkopts", [])
     linkstatic = kwargs.pop("linkstatic", True)
     native.cc_test(name = name, linkstatic = linkstatic, **kwargs)

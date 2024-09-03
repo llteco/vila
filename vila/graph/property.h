@@ -18,6 +18,7 @@
 #ifndef VILA_GRAPH_PROPERTY_H_
 #define VILA_GRAPH_PROPERTY_H_
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include <deque>
 #include <string>

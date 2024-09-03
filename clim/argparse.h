@@ -279,12 +279,12 @@ class ArgumentParser {
     }
     if (arg[0] == '-') {
       args_.emplace_back(arg);
-      checkin(args_.back().name_);
+      check(args_.back().name_);
       return args_.back();
     }
     pos_args_.emplace_back(arg);
     pos_args_.back().pos_ = static_cast<int64_t>(pos_args_.size() - 1);
-    checkin(pos_args_.back().name_);
+    check(pos_args_.back().name_);
     return pos_args_.back();
   }
 
@@ -460,7 +460,7 @@ class ArgumentParser {
     return argopt;
   }
 
-  void checkin(const std::string& key) {
+  void check(const std::string& key) {
     if (uniq_key_.count(key) > 0) {
       throw ParseError("duplicate argument " + key);
     }

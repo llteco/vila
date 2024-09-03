@@ -532,7 +532,7 @@ class Graph {
   }
 
   /**
-   * @brief Increate the hierarchical level of the graph and all subgraphs by 1.
+   * @brief Increase the hierarchical level of the graph and all subgraphs by 1.
    */
   void IncreaseHierarchy() {
     hierarchy_++;

@@ -189,18 +189,18 @@ TEST(VtTestBasic, Concat) {
   c = Concat(a, shape, b, shape, -1);
   for (int i = 0; i < c.size(); i++) {
     EXPECT_EQ(
-        c[i],
-        (vector<int>{
-            1, 2, 3, 10, 11, 12, 4, 5, 6, 13, 14, 15, 7, 8, 9, 16, 17, 18})[i]
+        c[i], (vector<int>{
+                  1, 2, 3, 10, 11, 12, 4, 5, 6, 13, 14, 15, 7, 8, 9, 16, 17, 18
+              })[i]
     );
   }
   shape = {1, 3, 3, 1};
   c = Concat(a, shape, b, shape, -1);
   for (int i = 0; i < c.size(); i++) {
     EXPECT_EQ(
-        c[i],
-        (vector<int>{
-            1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18})[i]
+        c[i], (vector<int>{
+                  1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8, 17, 9, 18
+              })[i]
     );
   }
 }

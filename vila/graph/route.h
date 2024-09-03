@@ -174,8 +174,8 @@ template <
     class Prop = DummyProperty,
     class TNode = Node<T>,
     class NodeIndex = AddressIndex<T>>
-auto AllSimplePaths(const DiGraph<T, Prop, TNode, NodeIndex>& g)
-    -> std::deque<std::deque<typename NodeIndex::index_type>> {
+auto AllSimplePaths(const DiGraph<T, Prop, TNode, NodeIndex>& g
+) -> std::deque<std::deque<typename NodeIndex::index_type>> {
   std::deque<std::deque<typename NodeIndex::index_type>> paths;
   for (const auto& node : g) {
     if (g.InDegree(node) == 0) {
@@ -204,8 +204,8 @@ template <
     class Prop = DummyProperty,
     class TNode = Node<T>,
     class NodeIndex = AddressIndex<T>>
-auto RootToLeafPaths(const DiGraph<T, Prop, TNode, NodeIndex>& g)
-    -> std::deque<std::deque<typename NodeIndex::index_type>> {
+auto RootToLeafPaths(const DiGraph<T, Prop, TNode, NodeIndex>& g
+) -> std::deque<std::deque<typename NodeIndex::index_type>> {
   return AllSimplePaths(g);
 }
 }  // namespace vila

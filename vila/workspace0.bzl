@@ -33,26 +33,31 @@ def workspace():
             "https://github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz",
         ],
     )
+
     # https://github.com/bazelbuild/rules_foreign_cc/releases
+    foreign_cc_version = "0.12.0"
     http_archive(
         name = "rules_foreign_cc",
-        sha256 = "476303bd0f1b04cc311fc258f1708a5f6ef82d3091e53fd1977fa20383425a6a",
-        strip_prefix = "rules_foreign_cc-0.10.1",
-        url = "https://github.com/bazelbuild/rules_foreign_cc/releases/download/0.10.1/rules_foreign_cc-0.10.1.tar.gz",
+        sha256 = "a2e6fb56e649c1ee79703e99aa0c9d13c6cc53c8d7a0cbb8797ab2888bbc99a3",
+        strip_prefix = "rules_foreign_cc-%s" % foreign_cc_version,
+        url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/%s.tar.gz" % foreign_cc_version,
     )
 
+    # https://github.com/pybind/pybind11_bazel/releases
+    pybind11_bazel_version = "2.12.0"
     http_archive(
         name = "pybind11_bazel",
-        sha256 = "2d3316d89b581966fc11eab9aa9320276baee95c8233c7a8efc7158623a48de0",
-        strip_prefix = "pybind11_bazel-ff261d2e9190955d0830040b20ea59ab9dbe66c8",
-        urls = ["https://github.com/pybind/pybind11_bazel/archive/ff261d2e9190955d0830040b20ea59ab9dbe66c8.zip"],
+        sha256 = "dc14a960672babf6da2f283079a5b5c13e404a940ea7cdb8297b71f8f31643a5",
+        strip_prefix = "pybind11_bazel-%s" % pybind11_bazel_version,
+        url = "https://github.com/pybind/pybind11_bazel/archive/refs/tags/v%s.tar.gz" % pybind11_bazel_version,
     )
 
     # https://github.com/pybind/pybind11/releases
+    pybind11_version = "2.13.5"
     http_archive(
         name = "pybind11",
         build_file = "@pybind11_bazel//:pybind11.BUILD",
-        sha256 = "d475978da0cdc2d43b73f30910786759d593a9d8ee05b1b6846d1eb16c6d2e0c",
-        strip_prefix = "pybind11-2.11.1",
-        url = "https://github.com/pybind/pybind11/archive/refs/tags/v2.11.1.tar.gz",
+        sha256 = "b1e209c42b3a9ed74da3e0b25a4f4cd478d89d5efbb48f04b277df427faf6252",
+        strip_prefix = "pybind11-%s" % pybind11_version,
+        url = "https://github.com/pybind/pybind11/archive/refs/tags/v%s.tar.gz" % pybind11_version,
     )

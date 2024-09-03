@@ -19,7 +19,8 @@ vila_cc_library(
         ":src/format.cc",
         ":src/os.cc",
     ],
-    hdrs = glob(["include/**"]),
+    hdrs = glob(["include/fmt/*.h"]),
+    defines = ["FMT_UNICODE=1"],
     includes = ["include"],
     strip_include_prefix = "include",
 )

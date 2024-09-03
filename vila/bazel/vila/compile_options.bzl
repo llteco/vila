@@ -31,6 +31,12 @@ CXX_STD_17 = select({
     "//conditions:default": ["-std=c++17"],
 })
 
+# Set source and execution character sets to UTF-8
+UNICODE = select({
+    "@platforms//os:windows": ["/utf-8"],
+    "//conditions:default": [],
+})
+
 MSVC_COPTS = [
     # Enables standard C++ stack unwinding. Catches only standard C++ exceptions
     # when you use catch(...) syntax. Unless /EHc is also specified, the
@@ -105,7 +111,7 @@ DEFAULT_COPTS = select({
         "-Wall",
     ],
     "//conditions:default": [],
-}) + CXX_STD_17
+}) + CXX_STD_17 + UNICODE
 
 DEFAULT_LINKOPTS = select({
     "@platforms//os:windows": MSVC_LINKOPTS,

@@ -28,36 +28,41 @@ def workspace():
     """
 
     # https://github.com/google/googletest/releases
+    gtest_version = "1.15.2"
     http_archive(
         name = "com_google_googletest",
-        sha256 = "ad7fdba11ea011c1d925b3289cf4af2c66a352e18d4c7264392fead75e919363",
-        strip_prefix = "googletest-1.13.0",
-        urls = ["https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz"],
+        sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
+        strip_prefix = "googletest-%s" % gtest_version,
+        url = "https://github.com/google/googletest/archive/refs/tags/v%s.tar.gz" % gtest_version,
     )
 
+    # https://github.com/google/benchmark/releases
+    benchmark_version = "1.9.0"
     http_archive(
         name = "com_google_benchmark",
-        sha256 = "2aab2980d0376137f969d92848fbb68216abb07633034534fc8c65cc4e7a0e93",
-        strip_prefix = "benchmark-1.8.2",
-        urls = ["https://github.com/google/benchmark/archive/refs/tags/v1.8.2.tar.gz"],
+        sha256 = "35a77f46cc782b16fac8d3b107fbfbb37dcd645f7c28eee19f3b8e0758b48994",
+        strip_prefix = "benchmark-%s" % benchmark_version,
+        url = "https://github.com/google/benchmark/archive/refs/tags/v%s.tar.gz" % benchmark_version,
     )
 
     # https://github.com/fmtlib/fmt/releases
+    fmt_version = "11.0.2"
     http_archive(
         name = "fmt",
         build_file = "@vila//vila/bazel:fmt.BUILD",
-        sha256 = "1250e4cc58bf06ee631567523f48848dc4596133e163f02615c97f78bab6c811",
-        strip_prefix = "fmt-10.2.1",
-        url = "https://github.com/fmtlib/fmt/archive/refs/tags/10.2.1.tar.gz",
+        sha256 = "6cb1e6d37bdcb756dbbe59be438790db409cdb4868c66e888d5df9f13f7c027f",
+        strip_prefix = "fmt-%s" % fmt_version,
+        url = "https://github.com/fmtlib/fmt/archive/refs/tags/%s.tar.gz" % fmt_version,
     )
 
     # https://github.com/gabime/spdlog/releases
+    spdlog_version = "1.14.1"
     http_archive(
         name = "spdlog",
         build_file = "@vila//vila/bazel:spdlog.BUILD",
-        sha256 = "534f2ee1a4dcbeb22249856edfb2be76a1cf4f708a20b0ac2ed090ee24cfdbc9",
-        strip_prefix = "spdlog-1.13.0",
-        url = "https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.tar.gz",
+        sha256 = "1586508029a7d0670dfcb2d97575dcdc242d3868a259742b69f100801ab4e16b",
+        strip_prefix = "spdlog-%s" % spdlog_version,
+        url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
     )
 
     # # https://github.com/abseil/abseil-cpp/releases
@@ -67,6 +72,15 @@ def workspace():
     #     strip_prefix = "abseil-cpp-20240116.2",
     #     url = "https://github.com/abseil/abseil-cpp/archive/refs/tags/20240116.2.tar.gz",
     # )
+
+    # https://github.com/ericniebler/range-v3
+    rangev3_version = "53c40dd628450c977ee1558285ff43e0613fa7a9"
+    http_archive(
+        name = "rangev3",
+        integrity = "sha256-3uvT1HqOcMb2maFCPul05Ku/AWqCAZEdYFQe4eRWFFQ=",
+        strip_prefix = "range-v3-%s" % rangev3_version,
+        url = "https://github.com/ericniebler/range-v3/archive/%s.zip" % rangev3_version,
+    )
 
     # Hedron's Compile Commands Extractor for Bazel
     # https://github.com/hedronvision/bazel-compile-commands-extractor

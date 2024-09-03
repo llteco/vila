@@ -72,7 +72,8 @@ Container Conv(
   Shape pas{ic, as[1] + pad * 2, as[2] + pad * 2};
   Shape bs{
       oc, (as[1] + pad * 2 - ((ws[2] - 1) * dila + 1) + 1) / s,
-      (as[2] + pad * 2 - ((ws[3] - 1) * dila + 1) + 1) / s};
+      (as[2] + pad * 2 - ((ws[3] - 1) * dila + 1) + 1) / s
+  };
   Container b(vt::PI(bs), 0);
   for (U i = 0; i < b.size(); i++) {
     auto bi = vt::RevIndex(i, bs);
@@ -82,7 +83,8 @@ Container Conv(
         for (U k2 = 0; k2 < ws[3]; k2++) {
           auto pai = vt::Index(
               Shape{
-                  g * ws[1] + j, bi[1] * s + k1 * dila, bi[2] * s + k2 * dila},
+                  g * ws[1] + j, bi[1] * s + k1 * dila, bi[2] * s + k2 * dila
+              },
               pas
           );
           b[i] += pa[pai] * w[vt::Index({bi[0], j, k1, k2}, ws)];

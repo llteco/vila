@@ -132,7 +132,8 @@ inline std::string encode(void const* src, size_t len) {
       "ABCDEFGHIJKLMNOP"
       "QRSTUVWXYZabcdef"
       "ghijklmnopqrstuv"
-      "wxyz0123456789+/"};
+      "wxyz0123456789+/"
+  };
 
   std::string out;
   out.reserve(4 * ((len + 2) / 3));

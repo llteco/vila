@@ -41,6 +41,16 @@ TEST(Logger, Nest) {
   logger->Nest("nest1")->Nest("nest2")->Info("vila!!!");
 }
 
+TEST(Logger, Unicode) {
+  // Avoid an MSVC sign extension bug: https://github.com/fmtlib/fmt/pull/2297.
+  using uchar = unsigned char;
+  constexpr uchar c2 = uchar("\u00A7"[0]);
+  constexpr uchar a7 = uchar("\u00A7"[1]);
+  EXPECT_TRUE(sizeof("\u00A7") == 3 && c2 == 0xC2 && a7 == 0xA7)
+      << "UCHAR=" << "\u00A7" << " C2=" << c2 << "(" << uchar(0xC2)
+      << ") A7=" << a7 << "(" << uchar(0xA7) << ")";
+}
+
 TEST(Tracer, TraceDump) {
   LOGI("binary tracer test");
   DEBUGTRACE();                               // log entry in debug mode

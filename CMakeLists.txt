@@ -29,6 +29,7 @@ option(VILA_ENABLE_TESTING "Enable testing" OFF)
 
 if(MSVC)
     add_compile_options("/std:c++17")
+    add_compile_options("/utf-8")
     add_compile_definitions(
         NOMINMAX
         SPDLOG_WCHAR_TO_UTF8_SUPPORT
