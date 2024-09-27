@@ -110,14 +110,12 @@ cc_test(
     ],
 )
 
-# cc_test(
-#     name = "hashmap_benchmark",
-#     srcs = ["hashmap_benchmark.cpp"],
-#     copts = CXX_STD,
-#     tags = ["benchmark"],
-#     deps = [
-#         "@abseil-cpp//absl/container:flat_hash_map",
-#         "@abseil-cpp//absl/container:node_hash_map",
-#         "@com_google_benchmark//:benchmark_main",
-#     ],
-# )
+cc_test(
+    name = "crtp_benchmark",
+    srcs = ["crtp_benchmark.cpp"],
+    copts = CXX_STD,
+    tags = ["benchmark"],
+    deps = [
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)

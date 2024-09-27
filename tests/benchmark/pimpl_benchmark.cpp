@@ -140,7 +140,16 @@ static void BM_PureAbstractGetValue(benchmark::State& state) {
   }
 }
 
+static void BM_PureAbstractCastGetValue(benchmark::State& state) {
+  auto foo = PureAbstractFoo::Create();
+  auto bar = std::dynamic_pointer_cast<FooImpl>(foo);
+  for (auto _ : state) {
+    bar->GetValue()++;
+  }
+}
+
 BENCHMARK(BM_PImplGetValue);
 BENCHMARK(BM_NativeGetValue);
 BENCHMARK(BM_PImplNoUniquePtrGetValue);
 BENCHMARK(BM_PureAbstractGetValue);
+BENCHMARK(BM_PureAbstractCastGetValue);

@@ -95,3 +95,10 @@ target_link_libraries(
     benchmark::benchmark
     benchmark::benchmark_main
     vila)
+
+add_executable(crtp_benchmark crtp_benchmark.cpp)
+target_link_libraries(
+    crtp_benchmark
+    PRIVATE
+    benchmark::benchmark
+    benchmark::benchmark_main)

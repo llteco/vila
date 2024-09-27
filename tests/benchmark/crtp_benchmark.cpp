@@ -22,40 +22,49 @@
  ******************************************************************************/
 #include <benchmark/benchmark.h>
 
-#include <unordered_map>
+namespace vf {
+class Base {
+ public:
+  virtual void doSomething() = 0;
+};
 
-#include "absl/container/flat_hash_map.h"
-#include "absl/container/node_hash_map.h"
+class Derived : public Base {
+ public:
+  void doSomething() override { volatile int i = 0; }
+};
 
-static void BM_std_unordered_map(benchmark::State& state) {
-  std::unordered_map<int, uint64_t> map;
+void callDoSomething(Base* obj) { obj->doSomething(); }
+}  // namespace vf
+
+namespace crtp {
+template <typename T>
+class Base {
+ public:
+  void doSomething() { static_cast<T*>(this)->doSomethingImpl(); }
+};
+
+class Derived : public Base<Derived> {
+ public:
+  void doSomethingImpl() { volatile int i = 0; }
+};
+
+void callDoSomething(Derived& obj) { obj.doSomething(); }
+}  // namespace crtp
+
+static void BM_VirtualFunctionCall(benchmark::State& state) {
+  vf::Derived obj;
   for (auto _ : state) {
-    for (int i = 0; i < state.range(0); i++) {
-      map[i] = 0xFULL;
-    }
+    vf::callDoSomething(&obj);
   }
 }
 
-BENCHMARK(BM_std_unordered_map)->Range(1, 10000);
+BENCHMARK(BM_VirtualFunctionCall);
 
-static void BM_absl_flat_hash_map(benchmark::State& state) {
-  absl::flat_hash_map<int, uint64_t> map;
+static void BM_CRTPFunctionCall(benchmark::State& state) {
+  crtp::Derived obj;
   for (auto _ : state) {
-    for (int i = 0; i < state.range(0); i++) {
-      map[i] = 0xFULL;
-    }
+    crtp::callDoSomething(obj);
   }
 }
 
-BENCHMARK(BM_absl_flat_hash_map)->Range(1, 10000);
-
-static void BM_absl_node_hash_map(benchmark::State& state) {
-  absl::node_hash_map<int, uint64_t> map;
-  for (auto _ : state) {
-    for (int i = 0; i < state.range(0); i++) {
-      map[i] = 0xFULL;
-    }
-  }
-}
-
-BENCHMARK(BM_absl_node_hash_map)->Range(1, 10000);
+BENCHMARK(BM_CRTPFunctionCall);
