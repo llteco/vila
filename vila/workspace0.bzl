@@ -34,6 +34,24 @@ def workspace():
         ],
     )
 
+    # https://github.com/bazel-contrib/bazel_features
+    bazel_features_version = "1.17.0"
+    http_archive(
+        name = "bazel_features",
+        sha256 = "bdc12fcbe6076180d835c9dd5b3685d509966191760a0eb10b276025fcb76158",
+        strip_prefix = "bazel_features-%s" % bazel_features_version,
+        url = "https://github.com/bazel-contrib/bazel_features/archive/refs/tags/%s.tar.gz" % bazel_features_version,
+    )
+
+    # https://github.com/bazelbuild/rules_cc/releases
+    rules_cc_version = "0.0.10"
+    http_archive(
+        name = "rules_cc",
+        sha256 = "65b67b81c6da378f136cc7e7e14ee08d5b9375973427eceb8c773a4f69fa7e49",
+        strip_prefix = "rules_cc-%s" % rules_cc_version,
+        url = "https://github.com/bazelbuild/rules_cc/archive/refs/tags/%s.tar.gz" % rules_cc_version,
+    )
+
     # https://github.com/bazelbuild/rules_foreign_cc/releases
     foreign_cc_version = "0.12.0"
     http_archive(

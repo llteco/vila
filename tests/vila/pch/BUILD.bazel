@@ -1,0 +1,34 @@
+"""
+Copyright (c) 2024 Intel Corporation
+Author: Wenyi Tang
+E-mail: wenyi.tang@intel.com
+
+"""
+
+load("//vila/bazel:pre_compile.bzl", "pch_library")
+
+flags = pch_library(
+    name = "pch",
+    pch_hdr = "//tests/vila/pch:pch.h",
+    deps = [":lib"],
+)
+
+cc_library(
+    name = "lib",
+    srcs = ["lib/lib.cpp"],
+    hdrs = ["lib/lib.h"],
+    includes = ["lib"],
+)
+
+cc_test(
+    name = "test_pch",
+    srcs = ["main.cpp"],
+    copts = select({
+        "@platforms//os:windows": flags,
+        "//conditions:default": [],
+    }),
+    deps = [
+        ":lib",
+        ":pch",
+    ],
+)

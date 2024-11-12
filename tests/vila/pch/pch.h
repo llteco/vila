@@ -1,0 +1,7 @@
+#ifndef ABC68DDB_426C_477D_99E4_962C65E42993
+#define ABC68DDB_426C_477D_99E4_962C65E42993
+#include <iostream>
+
+#include "lib.h"
+
+#endif /* ABC68DDB_426C_477D_99E4_962C65E42993 */

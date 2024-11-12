@@ -20,7 +20,6 @@
 # must be express and approved by Intel in writing.
 
 find_package(benchmark REQUIRED)
-find_package(absl REQUIRED)
 
 add_executable(container_benchmark container_benchmark.cpp)
 target_link_libraries(
@@ -44,16 +43,6 @@ target_link_libraries(
     PRIVATE
     benchmark::benchmark
     benchmark::benchmark_main
-    vila)
-
-add_executable(hashmap_benchmark hashmap_benchmark.cpp)
-target_link_libraries(
-    hashmap_benchmark
-    PRIVATE
-    benchmark::benchmark
-    benchmark::benchmark_main
-    absl::flat_hash_map
-    absl::node_hash_map
     vila)
 
 add_executable(pimpl_benchmark pimpl_benchmark.cpp)

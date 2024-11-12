@@ -6,7 +6,12 @@ E-mail: wenyi.tang@intel.com
 config cc toolchain to use oneAPI icx and icpx instruments
 """
 
-load("@//vila/bazel/toolchains:windows_toolchain_configure.bzl", "get_clang_cl_vars", "get_msvc_vars", "get_path_env_var")
+load(
+    "@vila//vila/bazel/toolchains:windows_toolchain_configure.bzl",
+    "get_clang_cl_vars",
+    "get_msvc_vars",
+    "get_path_env_var",
+)
 
 def find_oneapi_path(repository_ctx):
     r"""Find oneAPI installation on local machine.
@@ -88,7 +93,7 @@ def _resolve_labels(repository_ctx, labels):
 
 def _icpx_configure(repository_ctx):
     paths = _resolve_labels(repository_ctx, [
-        "@//vila/bazel/toolchains:BUILD.tpl",
+        "@vila//vila/bazel/toolchains:BUILD.tpl",
         "@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl",
         "@bazel_tools//tools/cpp:vc_installation_error.bat.tpl",
         "@bazel_tools//tools/cpp:clang_installation_error.bat.tpl",
@@ -107,7 +112,7 @@ def _icpx_configure(repository_ctx):
 
     repository_ctx.template(
         "BUILD",
-        paths["@//vila/bazel/toolchains:BUILD.tpl"],
+        paths["@vila//vila/bazel/toolchains:BUILD.tpl"],
         template_vars,
     )
 

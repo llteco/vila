@@ -53,3 +53,5 @@ add_executable(meta_traversal_test meta_traversal_test.cpp)
 target_link_libraries(
     meta_traversal_test PRIVATE GTest::gtest GTest::gtest_main vila)
 gtest_add_tests(TARGET meta_traversal_test)
+
+add_subdirectory(pch)

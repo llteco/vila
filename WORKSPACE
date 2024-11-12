@@ -31,12 +31,9 @@ vila_workspace2()
 
 # load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 # load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
-# load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 
 # bazel_skylib_workspace()
 
 # # This sets up some common toolchains for building targets. For more details, please see
 # # https://bazelbuild.github.io/rules_foreign_cc/0.9.0/flatten.html#rules_foreign_cc_dependencies
 # rules_foreign_cc_dependencies()
-
-# python_configure(name = "local_config_python")
