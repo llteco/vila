@@ -22,12 +22,13 @@ jobs:
           python-version: "3.11"
       - name: download bazel
         run: |
-          wget https://github.com/bazelbuild/bazel/releases/download/7.3.1/bazel-7.3.1-linux-x86_64
-          chmod +x bazel-7.3.1-linux-x86_64
+          if ! which bazelisk; then wget https://github.com/bazelbuild/bazelisk/releases/download/v1.21.0/bazelisk-linux-amd64 && chmod +x bazelisk-linux-amd64 && export PATH=$PATH:`pwd`; fi
+          if [ -e bazelisk-linux-amd64 ]; then mv ./bazelisk-linux-amd64 bazelisk; fi
       - name: build and test package
-        run: ./bazel-7.3.1-linux-x86_64 test -k //tests/...
-      - name: Clean up bazel
-        run: rm bazel-7.3.1-linux-x86_64
+        run: bazelisk test //tests/...
+      - name: build using legacy WORKSPACE
+        run: |
+          bazelisk --output_base=/tmp/_vila_workspace build --noenable_bzlmod //tests/...
       - name: Install vila python package
         run: python -m pip install -e python[test]
       - name: Test vila python package

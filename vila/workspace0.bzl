@@ -40,7 +40,7 @@ def workspace():
         name = "bazel_features",
         sha256 = "bdc12fcbe6076180d835c9dd5b3685d509966191760a0eb10b276025fcb76158",
         strip_prefix = "bazel_features-%s" % bazel_features_version,
-        url = "https://github.com/bazel-contrib/bazel_features/archive/refs/tags/%s.tar.gz" % bazel_features_version,
+        url = "https://github.com/bazel-contrib/bazel_features/archive/refs/tags/v%s.tar.gz" % bazel_features_version,
     )
 
     # https://github.com/bazelbuild/rules_cc/releases
@@ -61,21 +61,30 @@ def workspace():
         url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/%s.tar.gz" % foreign_cc_version,
     )
 
+    # https://github.com/bazelbuild/rules_python/releases
+    rules_python_version = "0.38.0"
+    http_archive(
+        name = "rules_python",
+        integrity = "sha256-yiZxUpiE4+y1t51qVgjHNzqCB4w1U7H6UyBua53dqzQ=",
+        strip_prefix = "rules_python-%s" % rules_python_version,
+        url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/%s.tar.gz" % rules_python_version,
+    )
+
     # https://github.com/pybind/pybind11_bazel/releases
-    pybind11_bazel_version = "2.12.0"
+    pybind11_version = "2.13.6"
     http_archive(
         name = "pybind11_bazel",
-        sha256 = "dc14a960672babf6da2f283079a5b5c13e404a940ea7cdb8297b71f8f31643a5",
-        strip_prefix = "pybind11_bazel-%s" % pybind11_bazel_version,
-        url = "https://github.com/pybind/pybind11_bazel/archive/refs/tags/v%s.tar.gz" % pybind11_bazel_version,
+        integrity = "sha256-yuaAZwv6boJwPAPyo8mVQIzcv0NhbXvdGY70XTwydzE=",
+        strip_prefix = "pybind11_bazel-%s" % pybind11_version,
+        url = "https://github.com/pybind/pybind11_bazel/archive/refs/tags/v%s.tar.gz" % pybind11_version,
     )
 
     # https://github.com/pybind/pybind11/releases
-    pybind11_version = "2.13.5"
+    pybind11_minor = int(pybind11_version.split(".")[1])
     http_archive(
         name = "pybind11",
-        build_file = "@pybind11_bazel//:pybind11.BUILD",
-        sha256 = "b1e209c42b3a9ed74da3e0b25a4f4cd478d89d5efbb48f04b277df427faf6252",
+        build_file = "@pybind11_bazel//:%s" % ("pybind11.BUILD" if pybind11_minor <= 11 else "pybind11-BUILD.bazel"),
+        integrity = "sha256-4Iy4f0dz2pf6e18DXeh2OrxlbYfVdz5i9toFh9Hw7CA=",
         strip_prefix = "pybind11-%s" % pybind11_version,
         url = "https://github.com/pybind/pybind11/archive/refs/tags/v%s.tar.gz" % pybind11_version,
     )

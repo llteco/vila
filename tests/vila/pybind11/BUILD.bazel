@@ -1,0 +1,19 @@
+"""
+Copyright (c) 2024 Intel Corporation
+Author: Wenyi Tang
+E-mail: wenyi.tang@intel.com
+
+"""
+
+load("@pybind11_bazel//:build_defs.bzl", "pybind_extension", "pybind_library")
+
+pybind_library(
+    name = "lib",
+    srcs = ["lib.cpp"],
+    alwayslink = 1,
+)
+
+pybind_extension(
+    name = "pybind_test",
+    deps = [":lib"],
+)
