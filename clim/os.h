@@ -25,14 +25,13 @@
  *
  * @return std::map<std::string, std::string>
  */
-static std::map<std::string, std::string>& Environ();
+static std::map<std::string, std::string> Environ();
 
 #ifdef _WIN32
 #include <Windows.h>
 
-static std::map<std::string, std::string>& Environ() {
-  static std::map<std::string, std::string> ret;
-  if (!ret.empty()) return ret;
+static std::map<std::string, std::string> Environ() {
+  std::map<std::string, std::string> ret;
 
   auto* envs = GetEnvironmentStrings();
   std::string k, v;  // key, value
@@ -67,9 +66,8 @@ static std::map<std::string, std::string>& Environ() {
 
 extern char** environ;  // NOLINT
 
-static std::map<std::string, std::string>& Environ() {
-  static std::map<std::string, std::string> ret;
-  if (!ret.empty()) return ret;
+static std::map<std::string, std::string> Environ() {
+  std::map<std::string, std::string> ret;
 
   const char* envs = environ[0];
   std::string k, v;  // key, value
