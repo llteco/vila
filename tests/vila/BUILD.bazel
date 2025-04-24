@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -98,5 +98,14 @@ vila_cc_test(
     deps = [
         "@com_google_googletest//:gtest_main",
         "@rangev3//:range-v3",
+    ],
+)
+
+vila_cc_test(
+    name = "profiling_itt_test",
+    srcs = ["profiling_itt_test.cpp"],
+    deps = [
+        "//vila/profiling:itt",
+        "@com_google_googletest//:gtest_main",
     ],
 )

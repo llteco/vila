@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -21,7 +21,7 @@ estoppel or otherwise. Any license under such intellectual property rights
 must be express and approved by Intel in writing.
 """
 
-module(name = "vila", version = "1.0.1")
+module(name = "vila", version = "1.0.2")
 
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "bazel_features", version = "1.17.0")
@@ -51,6 +51,9 @@ use_repo(spdlog_ext, "spdlog")
 
 rangev3_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "rangev3_extension")
 use_repo(rangev3_ext, "rangev3")
+
+ittapi_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "ittapi_extension")
+use_repo(ittapi_ext, "ittapi")
 
 hedron_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "hedron_extension")
 use_repo(hedron_ext, "hedron_compile_commands")

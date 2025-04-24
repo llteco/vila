@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -58,6 +58,18 @@ def load_rangev3(ctx):
         url = "https://github.com/ericniebler/range-v3/archive/%s.zip" % rangev3_version,
     )
 
+def load_ittapi(ctx):
+    # Intel® Instrumentation and Tracing Technology (ITT) and Just-In-Time (JIT) API
+    # https://github.com/intel/ittapi
+    itt_version = "3.25.5"
+    http_archive(
+        name = "ittapi",
+        build_file = "@vila//vila/bazel:ittapi.BUILD",
+        integrity = "sha256-LRkkPnrIp94Iv9AFQpowjB21Khjlt7ZtKabBnwZpRuM=",
+        strip_prefix = "ittapi-%s" % itt_version,
+        url = "https://github.com/intel/ittapi/archive/refs/tags/v%s.tar.gz" % itt_version,
+    )
+
 spdlog_extension = module_extension(
     implementation = load_spdlog,
 )
@@ -68,6 +80,10 @@ hedron_extension = module_extension(
 
 rangev3_extension = module_extension(
     implementation = load_rangev3,
+)
+
+ittapi_extension = module_extension(
+    implementation = load_ittapi,
 )
 
 python_configure_extension = module_extension(

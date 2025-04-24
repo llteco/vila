@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -44,5 +44,14 @@ vila_cc_library(
         "@vila//clim:os",
         "@vila//clim:vt",
         "@vila//vila/logging:logger",
+    ],
+)
+
+vila_cc_library(
+    name = "itt",
+    srcs = ["itt.cc"],
+    hdrs = ["itt.h"],
+    deps = [
+        "@ittapi//:ittnotify",
     ],
 )

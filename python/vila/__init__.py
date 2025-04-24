@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2024 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -21,4 +21,4 @@ estoppel or otherwise. Any license under such intellectual property rights
 must be express and approved by Intel in writing.
 """
 
-__version__ = "0.0.1"
+__version__ = "1.0.2"

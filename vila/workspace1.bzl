@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -22,6 +22,13 @@ must be express and approved by Intel in writing.
 """
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load(
+    "@vila//vila/bazel/bzlmod:extensions.bzl",
+    "load_spdlog",
+    "load_hedron",
+    "load_rangev3",
+    "load_ittapi",
+)
 
 def workspace():
     """Loads a set of vila dependencies. To be used in a WORKSPACE file.
@@ -56,14 +63,7 @@ def workspace():
     )
 
     # https://github.com/gabime/spdlog/releases
-    spdlog_version = "1.14.1"
-    http_archive(
-        name = "spdlog",
-        build_file = "@vila//vila/bazel:spdlog.BUILD",
-        sha256 = "1586508029a7d0670dfcb2d97575dcdc242d3868a259742b69f100801ab4e16b",
-        strip_prefix = "spdlog-%s" % spdlog_version,
-        url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
-    )
+    load_spdlog(None)
 
     # # https://github.com/abseil/abseil-cpp/releases
     # http_archive(
@@ -74,19 +74,12 @@ def workspace():
     # )
 
     # https://github.com/ericniebler/range-v3
-    rangev3_version = "53c40dd628450c977ee1558285ff43e0613fa7a9"
-    http_archive(
-        name = "rangev3",
-        integrity = "sha256-3uvT1HqOcMb2maFCPul05Ku/AWqCAZEdYFQe4eRWFFQ=",
-        strip_prefix = "range-v3-%s" % rangev3_version,
-        url = "https://github.com/ericniebler/range-v3/archive/%s.zip" % rangev3_version,
-    )
+    load_rangev3(None)
 
     # Hedron's Compile Commands Extractor for Bazel
     # https://github.com/hedronvision/bazel-compile-commands-extractor
-    http_archive(
-        name = "hedron_compile_commands",
-        sha256 = "9c4ce757e0e53f8d69283968263cdee98d8f711191da3bdaa94875ea3ad8b601",
-        strip_prefix = "bazel-compile-commands-extractor-f56c9e944474fc3a6aade106ff44a372ab8c84d2",
-        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/f56c9e944474fc3a6aade106ff44a372ab8c84d2.zip",
-    )
+    load_hedron(None)
+
+    # Intel® Instrumentation and Tracing Technology (ITT) and Just-In-Time (JIT) API
+    # https://github.com/intel/ittapi
+    load_ittapi(None)
