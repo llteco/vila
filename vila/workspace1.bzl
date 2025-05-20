@@ -35,29 +35,38 @@ def workspace():
     """
 
     # https://github.com/google/googletest/releases
-    gtest_version = "1.15.2"
+    gtest_version = "1.17.0"
     http_archive(
         name = "com_google_googletest",
-        sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
+        integrity = "sha256-Zfq3AdmCnTjLd8FKzcQx0hCL/b+JeeQOuK5Wft8Qsnw=",
         strip_prefix = "googletest-%s" % gtest_version,
         url = "https://github.com/google/googletest/archive/refs/tags/v%s.tar.gz" % gtest_version,
     )
 
     # https://github.com/google/benchmark/releases
-    benchmark_version = "1.9.0"
+    benchmark_version = "1.9.2"
     http_archive(
         name = "com_google_benchmark",
-        sha256 = "35a77f46cc782b16fac8d3b107fbfbb37dcd645f7c28eee19f3b8e0758b48994",
+        integrity = "sha256-QJB1F2Fo3Ea7uBt0wbS2kAOFtdFr/BgdZ4r7Bg2Si9M=",
         strip_prefix = "benchmark-%s" % benchmark_version,
         url = "https://github.com/google/benchmark/archive/refs/tags/v%s.tar.gz" % benchmark_version,
     )
 
+    # https://github.com/protocolbuffers/protobuf/releases
+    protobuf_version = "29.4"
+    http_archive(
+        name = "com_google_protobuf",
+        integrity = "sha256-a9ncyRsX7yXCat+G23HGfsAkMdyS6Vier4LiKIkjBJY=",
+        strip_prefix = "protobuf-%s" % protobuf_version,
+        url = "https://github.com/google/protobuf/archive/refs/tags/v%s.tar.gz" % protobuf_version,
+    )
+
     # https://github.com/fmtlib/fmt/releases
-    fmt_version = "11.0.2"
+    fmt_version = "11.2.0"
     http_archive(
         name = "fmt",
         build_file = "@vila//vila/bazel:fmt.BUILD",
-        sha256 = "6cb1e6d37bdcb756dbbe59be438790db409cdb4868c66e888d5df9f13f7c027f",
+        integrity = "sha256-vCMGbYerMWjyfO8+l9VF+mMxT1x5316kRNQdVvlixq8=",
         strip_prefix = "fmt-%s" % fmt_version,
         url = "https://github.com/fmtlib/fmt/archive/refs/tags/%s.tar.gz" % fmt_version,
     )

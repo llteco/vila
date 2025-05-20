@@ -1,5 +1,5 @@
 """
-INTEL CONFIDENTIAL Copyright 2023 Intel Corporation All Rights Reserved.
+INTEL CONFIDENTIAL Copyright 2025 Intel Corporation All Rights Reserved.
 
 The source code contained or described herein and all documents related to the source code
 ("Material") are owned by Intel Corporation or its suppliers or licensors. Title to the Material
@@ -46,5 +46,5 @@ py_repositories()
 
 python_register_toolchains(
     name = "local_config_python",
-    python_version = "3.11",
+    python_version = "3.13",
 )

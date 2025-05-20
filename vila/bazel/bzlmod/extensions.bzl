@@ -29,11 +29,11 @@ load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def load_spdlog(ctx):
     # https://github.com/gabime/spdlog/releases
-    spdlog_version = "1.14.1"
+    spdlog_version = "1.15.3"
     http_archive(
         name = "spdlog",
         build_file = "@vila//vila/bazel:spdlog.BUILD",
-        sha256 = "1586508029a7d0670dfcb2d97575dcdc242d3868a259742b69f100801ab4e16b",
+        integrity = "sha256-FaBOacIi62wBCUtcf/iiSbNrsieI1yUZZG+4X+smfmc=",
         strip_prefix = "spdlog-%s" % spdlog_version,
         url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
     )
@@ -41,11 +41,12 @@ def load_spdlog(ctx):
 def load_hedron(ctx):
     # Hedron's Compile Commands Extractor for Bazel
     # https://github.com/hedronvision/bazel-compile-commands-extractor
+    hedron_commit = "4f28899228fb3ad0126897876f147ca15026151e"
     http_archive(
         name = "hedron_compile_commands",
-        sha256 = "9c4ce757e0e53f8d69283968263cdee98d8f711191da3bdaa94875ea3ad8b601",
-        strip_prefix = "bazel-compile-commands-extractor-f56c9e944474fc3a6aade106ff44a372ab8c84d2",
-        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/f56c9e944474fc3a6aade106ff44a372ab8c84d2.zip",
+        integrity = "sha256-yAKektowLwoy/Q1AWTWMhle1y4JigAC3teJZxz+RiC0=",
+        strip_prefix = "bazel-compile-commands-extractor-%s" % hedron_commit,
+        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/%s.zip" % hedron_commit,
     )
 
 def load_rangev3(ctx):

@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -35,37 +35,37 @@ def workspace():
     )
 
     # https://github.com/bazel-contrib/bazel_features
-    bazel_features_version = "1.17.0"
+    bazel_features_version = "1.29.0"
     http_archive(
         name = "bazel_features",
-        sha256 = "bdc12fcbe6076180d835c9dd5b3685d509966191760a0eb10b276025fcb76158",
+        integrity = "sha256-2FLzic6NuLjC+YB6T68GWw0LowIWOJjNJCi2yn0IZoE=",
         strip_prefix = "bazel_features-%s" % bazel_features_version,
         url = "https://github.com/bazel-contrib/bazel_features/archive/refs/tags/v%s.tar.gz" % bazel_features_version,
     )
 
     # https://github.com/bazelbuild/rules_cc/releases
-    rules_cc_version = "0.0.10"
+    rules_cc_version = "0.0.14"  # this is the last working version for legacy workspace
     http_archive(
         name = "rules_cc",
-        sha256 = "65b67b81c6da378f136cc7e7e14ee08d5b9375973427eceb8c773a4f69fa7e49",
+        integrity = "sha256-kG6JKGrMZ8IIGcPIizKD3g1YaK/aM2NdcKyuDel3e7c=",
         strip_prefix = "rules_cc-%s" % rules_cc_version,
         url = "https://github.com/bazelbuild/rules_cc/archive/refs/tags/%s.tar.gz" % rules_cc_version,
     )
 
     # https://github.com/bazelbuild/rules_foreign_cc/releases
-    foreign_cc_version = "0.12.0"
+    foreign_cc_version = "0.14.0"
     http_archive(
         name = "rules_foreign_cc",
-        sha256 = "a2e6fb56e649c1ee79703e99aa0c9d13c6cc53c8d7a0cbb8797ab2888bbc99a3",
+        integrity = "sha256-4PDrsaIiPJmpBKVl5iqihb8dGortoi0Q6iEnWRYkhmw=",
         strip_prefix = "rules_foreign_cc-%s" % foreign_cc_version,
         url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/%s.tar.gz" % foreign_cc_version,
     )
 
     # https://github.com/bazelbuild/rules_python/releases
-    rules_python_version = "0.38.0"
+    rules_python_version = "1.4.1"
     http_archive(
         name = "rules_python",
-        integrity = "sha256-yiZxUpiE4+y1t51qVgjHNzqCB4w1U7H6UyBua53dqzQ=",
+        integrity = "sha256-n587MAqSZOTHeZkxLOZjvl3umlbjYaH2/n7GDhvu+aM=",
         strip_prefix = "rules_python-%s" % rules_python_version,
         url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/%s.tar.gz" % rules_python_version,
     )

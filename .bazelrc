@@ -18,6 +18,7 @@ build:windows --features=compiler_param_file --enable_runfiles
 build:windows --cpu=x64_windows
 build:windows --output_filter="^注意\: 包含文件\:"
 build:windows --output_filter="^cl\:.*warning D9025"
+build:windows --cxxopt="/std:c++17"
 
 build:linux --compiler=clang --features=compiler_param_file
 build:linux --repo_env=CC=clang --repo_env=CXX=clang++

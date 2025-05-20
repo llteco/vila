@@ -21,4 +21,4 @@ estoppel or otherwise. Any license under such intellectual property rights
 must be express and approved by Intel in writing.
 """
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
