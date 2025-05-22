@@ -28,9 +28,10 @@ build:coverage --copt "-fcoverage-mapping" --copt "-fprofile-instr-generate"
 build:coverage --linkopt "-fcoverage-mapping" --linkopt "-fprofile-instr-generate"
 build:lcov --copt "-fprofile-arcs" --copt "-ftest-coverage"
 build:lcov --linkopt "--coverage"
-## --crosstool_top option is no longer useful after bazel 7.0.0, it's only kept for bazel 5
-build:bullseye --crosstool_top=@local_config_bullseye//:toolchain
-build:icpx --crosstool_top=@local_config_icpx//:toolchain --copt="-Wno-macro-redefined" --copt="-Wno-builtin-macro-redefined"
+
+build:bullseye --platforms=@local_config_bullseye
+# /fsycl is not compatible with /MT
+build:sycl --platforms=@local_config_sycl --features=-static_link_msvcrt
 
 # print error test logs
 test --test_output=errors

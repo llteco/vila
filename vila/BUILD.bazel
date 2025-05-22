@@ -45,6 +45,14 @@ config_setting(
     values = {"compiler": "clang"},
 )
 
+config_setting(
+    name = "sycl",
+    constraint_values = [
+        "@platforms//os:windows",
+        "@vila//vila/bazel/toolchains:sycl",
+    ],
+)
+
 bool_flag(
     name = "with_backtrace",
     build_setting_default = False,

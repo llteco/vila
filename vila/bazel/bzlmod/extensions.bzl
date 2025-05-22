@@ -24,7 +24,7 @@ must be express and approved by Intel in writing.
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
-load("@vila//vila/bazel/toolchains:icpx_cc_configure.bzl", "icpx_configure")
+load("@vila//vila/bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
 load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def load_spdlog(ctx):
@@ -99,6 +99,6 @@ bullseye_configure_extension = module_extension(
     implementation = lambda ctx: bullseye_configure(name = "local_config_bullseye"),
 )
 
-icpx_configure_extension = module_extension(
-    implementation = lambda ctx: icpx_configure(name = "local_config_icpx"),
+sycl_configure_extension = module_extension(
+    implementation = lambda ctx: sycl_configure(name = "local_config_sycl"),
 )

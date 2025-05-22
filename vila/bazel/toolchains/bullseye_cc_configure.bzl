@@ -1,11 +1,12 @@
 """
-Copyright (c) 2022 Intel Corporation
+Copyright (c) 2025 Intel Corporation
 Author: Wenyi Tang
 E-mail: wenyi.tang@intel.com
 
 config cc toolchain to use bullseye instruments
 """
 
+load("@vila//vila/bazel/toolchains:os.bzl", "is_windows")
 load(
     "@vila//vila/bazel/toolchains:windows_toolchain_configure.bzl",
     "get_clang_cl_vars",
@@ -45,6 +46,8 @@ def _overwrite_bullseye_msvc(repository_ctx, msvc_vars, target_arch):
         elif target_arch == "x86":
             msvc_vars["%{msvc_cl_path_" + target_arch + "}"] = bullseye_path + "/bin/x86/cl.exe"
             msvc_vars["%{msvc_link_path_" + target_arch + "}"] = bullseye_path + "/bin/x86/link.exe"
+    else:
+        print("bullseye may not be installed, please check the environment variable BAZEL_BULLSEYE")
 
 def _overwrite_bullseye_clang_cl(repository_ctx, msvc_vars, target_arch):
     bullseye_path = find_bullseye_path(repository_ctx)
@@ -55,6 +58,8 @@ def _overwrite_bullseye_clang_cl(repository_ctx, msvc_vars, target_arch):
         elif target_arch == "x86":
             msvc_vars["%{clang_cl_path_" + target_arch + "}"] = bullseye_path + "/bin/x86/clang-cl.exe"
             msvc_vars["%{clang_cl_link_path_" + target_arch + "}"] = bullseye_path + "/bin/x86/link.exe"
+    else:
+        print("bullseye may not be installed, please check the environment variable BAZEL_BULLSEYE")
 
 def _resolve_labels(repository_ctx, labels):
     """Resolves a collection of labels to their paths.
@@ -81,28 +86,33 @@ def _resolve_labels(repository_ctx, labels):
 
 def _bullseye_configure(repository_ctx):
     paths = _resolve_labels(repository_ctx, [
-        "@vila//vila/bazel/toolchains:BUILD.tpl",
+        "@vila//vila/bazel/toolchains:BUILD_bullseye.tpl",
         "@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl",
         "@bazel_tools//tools/cpp:vc_installation_error.bat.tpl",
         "@bazel_tools//tools/cpp:clang_installation_error.bat.tpl",
     ])
 
-    template_vars = dict()
-    msvc_vars_x64 = get_msvc_vars(repository_ctx, paths, "x64")
-    _overwrite_bullseye_msvc(repository_ctx, msvc_vars_x64, "x64")
-    template_vars.update(msvc_vars_x64)
-    clang_cl_vars_x64 = get_clang_cl_vars(repository_ctx, paths, msvc_vars_x64, "x64")
-    _overwrite_bullseye_clang_cl(repository_ctx, clang_cl_vars_x64, "x64")
-    template_vars.update(clang_cl_vars_x64)
-    msvc_vars_x64_x86 = get_msvc_vars(repository_ctx, paths, "x86", msvc_vars_x64)
-    _overwrite_bullseye_msvc(repository_ctx, msvc_vars_x64_x86, "x86")
-    template_vars.update(msvc_vars_x64_x86)
+    if is_windows(repository_ctx):
+        repo_name = repository_ctx.name.split("~")[-1]
+        template_vars = dict({
+            "%{constraint_values}": "\"@vila//vila/bazel/toolchains:bullseye\"",
+            "%{platform_name}": repo_name,
+        })
+        msvc_vars_x64 = get_msvc_vars(repository_ctx, paths, "x64")
+        _overwrite_bullseye_msvc(repository_ctx, msvc_vars_x64, "x64")
+        template_vars.update(msvc_vars_x64)
+        clang_cl_vars_x64 = get_clang_cl_vars(repository_ctx, paths, msvc_vars_x64, "x64")
+        _overwrite_bullseye_clang_cl(repository_ctx, clang_cl_vars_x64, "x64")
+        template_vars.update(clang_cl_vars_x64)
+        msvc_vars_x64_x86 = get_msvc_vars(repository_ctx, paths, "x86", msvc_vars_x64)
+        _overwrite_bullseye_msvc(repository_ctx, msvc_vars_x64_x86, "x86")
+        template_vars.update(msvc_vars_x64_x86)
 
-    repository_ctx.template(
-        "BUILD",
-        paths["@vila//vila/bazel/toolchains:BUILD.tpl"],
-        template_vars,
-    )
+        repository_ctx.template(
+            "BUILD",
+            paths["@vila//vila/bazel/toolchains:BUILD_bullseye.tpl"],
+            template_vars,
+        )
 
 bullseye_configure = repository_rule(
     implementation = _bullseye_configure,

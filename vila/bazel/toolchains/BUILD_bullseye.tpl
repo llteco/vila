@@ -1,9 +1,9 @@
 """
-Copyright (c) 2022 Intel Corporation
+Copyright (c) 2025 Intel Corporation
 Author: Wenyi Tang
 E-mail: wenyi.tang@intel.com
 
-custom cc toolchains
+custom cc toolchains for Windows
 """
 
 load("@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl", "cc_toolchain_config")
@@ -18,31 +18,6 @@ filegroup(
 filegroup(
     name = "msvc_compiler_files",
     srcs = [],
-)
-
-cc_toolchain_suite(
-    name = "toolchain",
-    toolchains = {
-        "x64_windows": ":cc-compiler-x64_windows",
-        "x64_x86_windows": ":cc-compiler-x64_x86_windows",
-        "x64_windows|msvc-cl": ":cc-compiler-x64_windows",
-        "x64_x86_windows|msvc-cl": ":cc-compiler-x64_x86_windows",
-    },
-)
-
-cc_toolchain(
-    name = "cc-compiler-x64_windows",
-    all_files = ":empty",
-    ar_files = ":empty",
-    as_files = ":msvc_compiler_files",
-    compiler_files = ":msvc_compiler_files",
-    dwp_files = ":empty",
-    linker_files = ":empty",
-    objcopy_files = ":empty",
-    strip_files = ":empty",
-    supports_param_files = 1,
-    toolchain_config = ":msvc_x64",
-    toolchain_identifier = "msvc_x64",
 )
 
 cc_toolchain_config(
@@ -82,22 +57,8 @@ cc_toolchain_config(
     fastbuild_mode_debug_flag = "%{fastbuild_mode_debug_flag_x64}",
 )
 
-toolchain(
-    name = "cc-toolchain-x64_windows",
-    exec_compatible_with = [
-        "@platforms//cpu:x86_64",
-        "@platforms//os:windows",
-    ],
-    target_compatible_with = [
-        "@platforms//cpu:x86_64",
-        "@platforms//os:windows",
-    ],
-    toolchain = ":cc-compiler-x64_windows",
-    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
-)
-
 cc_toolchain(
-    name = "cc-compiler-x64_x86_windows",
+    name = "cc-compiler-x64_windows",
     all_files = ":empty",
     ar_files = ":empty",
     as_files = ":msvc_compiler_files",
@@ -107,8 +68,42 @@ cc_toolchain(
     objcopy_files = ":empty",
     strip_files = ":empty",
     supports_param_files = 1,
-    toolchain_config = ":msvc_x64_x86",
-    toolchain_identifier = "msvc_x64_x86",
+    toolchain_config = ":msvc_x64",
+    toolchain_identifier = "msvc_x64",
+)
+
+# Implements platform-based (recommended) toolchain selection.
+#
+# See https://docs.bazel.build/versions/master/platforms-intro.html. The main
+# differences are:
+#
+#  1. --cpu / --crosstool_top are replaced by a platform() definition with
+#       much more customizable properties. For example, a platform can specify
+#       OS, device type (server, phone, tablet) or custom hardware extensions.
+#  2. All languages can support platform-based toolchains. A single --platforms
+#       value can choose C++, Python, Scala, and all other toolchains in your
+#       build. This is especially useful for multi-language builds.
+#  3. Platforms  support features like incompatible target skipping:
+#       https://docs.bazel.build/versions/master/platforms.html#skipping-incompatible-targets.
+toolchain(
+    name = "cc-toolchain-x64_windows",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    # Trigger this toolchain for x86-compatible platforms.
+    # See https://github.com/bazelbuild/platforms.
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ] + [
+        %{constraint_values}
+    ],
+    # Register this toolchain with platforms.
+    toolchain = ":cc-compiler-x64_windows",
+    # The public interface for all C++ toolchains. Starlark rules that use C++
+    # access the toolchain through this interface.
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 
 cc_toolchain_config(
@@ -148,16 +143,58 @@ cc_toolchain_config(
     fastbuild_mode_debug_flag = "%{fastbuild_mode_debug_flag_x86}",
 )
 
+cc_toolchain(
+    name = "cc-compiler-x64_x86_windows",
+    all_files = ":empty",
+    ar_files = ":empty",
+    as_files = ":msvc_compiler_files",
+    compiler_files = ":msvc_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":empty",
+    objcopy_files = ":empty",
+    strip_files = ":empty",
+    supports_param_files = 1,
+    toolchain_config = ":msvc_x64_x86",
+    toolchain_identifier = "msvc_x64_x86",
+)
+
 toolchain(
     name = "cc-toolchain-x64_x86_windows",
     exec_compatible_with = [
-        "@platforms//cpu:x86_64",
+        "@platforms//cpu:x86_32",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
         "@platforms//cpu:x86_32",
         "@platforms//os:windows",
+    ] + [
+        %{constraint_values}
     ],
     toolchain = ":cc-compiler-x64_x86_windows",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+# Implements legacy toolchain selection.
+#
+# Setting --crosstool_top here registers the set of available
+# toolchains. Setting --cpu to one of the toolchain attribute's keys selects a
+# toolchain.
+cc_toolchain_suite(
+    name = "toolchain",
+    toolchains = {
+        "x64_windows": ":cc-compiler-x64_windows",
+        "x64_x86_windows": ":cc-compiler-x64_x86_windows",
+        "x64_windows|msvc-cl": ":cc-compiler-x64_windows",
+        "x64_x86_windows|msvc-cl": ":cc-compiler-x64_x86_windows",
+    },
+)
+
+platform(
+    name = "%{platform_name}",
+    constraint_values = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ] + [
+        %{constraint_values}
+    ],
 )

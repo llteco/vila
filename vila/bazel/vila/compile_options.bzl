@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -114,6 +114,7 @@ DEFAULT_COPTS = select({
 }) + CXX_STD_17 + UNICODE
 
 DEFAULT_LINKOPTS = select({
+    "@vila//vila:sycl": [],
     "@platforms//os:windows": MSVC_LINKOPTS,
     "//conditions:default": [],
 })
