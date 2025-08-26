@@ -25,18 +25,24 @@ load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configu
 load("@vila//vila/bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
 load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
-def workspace():
+def workspace(bullseye = False, sycl = False):
     """Loads a set of vila dependencies. To be used in a WORKSPACE file.
+
+    Args:
+        bullseye: Whether to include Bullseye Coverage.
+        sycl: Whether to include oneAPI DPC++ compiler.
     """
 
     # Get Bullseye Coverage tool
-    bullseye_configure(name = "local_config_bullseye")
+    if bullseye:
+        bullseye_configure(name = "local_config_bullseye")
 
     # Get WDK package
     wdk_configure(name = "local_config_wdk")
 
     # Get oneAPI DPC++ compiler
-    sycl_configure(name = "local_config_sycl")
+    if sycl:
+        sycl_configure(name = "local_config_sycl")
 
     # After bazel 6.4:
     # For extra copt needed for sycl, it is convenient to specify '--config=sycl'

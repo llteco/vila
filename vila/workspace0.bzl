@@ -23,16 +23,28 @@ must be express and approved by Intel in writing.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-def workspace():
+def workspace(skylib = True, rules_cc = True, rules_foreign_cc = True, rules_python = True, pybind11 = True):
+    """Declare basic workspace dependency
+
+    Args:
+        skylib: Whether to include Bazel Skylib.
+        rules_cc: Whether to include Bazel Rules for C/C++.
+        rules_foreign_cc: Whether to include Bazel Rules for Foreign C/C++.
+        rules_python: Whether to include Bazel Rules for Python.
+        pybind11: Whether to include Pybind11.
+    """
+
     # https://github.com/bazelbuild/bazel-skylib/releases
-    http_archive(
-        name = "bazel_skylib",
-        sha256 = "bc283cdfcd526a52c3201279cda4bc298652efa898b10b4db0837dc51652756f",
-        urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz",
-        ],
-    )
+    skylib_version = "1.7.1"
+    if skylib:
+        http_archive(
+            name = "bazel_skylib",
+            sha256 = "bc283cdfcd526a52c3201279cda4bc298652efa898b10b4db0837dc51652756f",
+            urls = [
+                "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/{0}/bazel-skylib-{0}.tar.gz".format(skylib_version),
+                "https://github.com/bazelbuild/bazel-skylib/releases/download/{0}/bazel-skylib-{0}.tar.gz".format(skylib_version),
+            ],
+        )
 
     # https://github.com/bazel-contrib/bazel_features
     bazel_features_version = "1.29.0"
@@ -45,46 +57,50 @@ def workspace():
 
     # https://github.com/bazelbuild/rules_cc/releases
     rules_cc_version = "0.0.14"  # this is the last working version for legacy workspace
-    http_archive(
-        name = "rules_cc",
-        integrity = "sha256-kG6JKGrMZ8IIGcPIizKD3g1YaK/aM2NdcKyuDel3e7c=",
-        strip_prefix = "rules_cc-%s" % rules_cc_version,
-        url = "https://github.com/bazelbuild/rules_cc/archive/refs/tags/%s.tar.gz" % rules_cc_version,
-    )
+    if rules_cc:
+        http_archive(
+            name = "rules_cc",
+            integrity = "sha256-kG6JKGrMZ8IIGcPIizKD3g1YaK/aM2NdcKyuDel3e7c=",
+            strip_prefix = "rules_cc-%s" % rules_cc_version,
+            url = "https://github.com/bazelbuild/rules_cc/archive/refs/tags/%s.tar.gz" % rules_cc_version,
+        )
 
     # https://github.com/bazelbuild/rules_foreign_cc/releases
     foreign_cc_version = "0.14.0"
-    http_archive(
-        name = "rules_foreign_cc",
-        integrity = "sha256-4PDrsaIiPJmpBKVl5iqihb8dGortoi0Q6iEnWRYkhmw=",
-        strip_prefix = "rules_foreign_cc-%s" % foreign_cc_version,
-        url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/%s.tar.gz" % foreign_cc_version,
-    )
+    if rules_foreign_cc:
+        http_archive(
+            name = "rules_foreign_cc",
+            integrity = "sha256-4PDrsaIiPJmpBKVl5iqihb8dGortoi0Q6iEnWRYkhmw=",
+            strip_prefix = "rules_foreign_cc-%s" % foreign_cc_version,
+            url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/%s.tar.gz" % foreign_cc_version,
+        )
 
     # https://github.com/bazelbuild/rules_python/releases
     rules_python_version = "1.4.1"
-    http_archive(
-        name = "rules_python",
-        integrity = "sha256-n587MAqSZOTHeZkxLOZjvl3umlbjYaH2/n7GDhvu+aM=",
-        strip_prefix = "rules_python-%s" % rules_python_version,
-        url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/%s.tar.gz" % rules_python_version,
-    )
+    if rules_python:
+        http_archive(
+            name = "rules_python",
+            integrity = "sha256-n587MAqSZOTHeZkxLOZjvl3umlbjYaH2/n7GDhvu+aM=",
+            strip_prefix = "rules_python-%s" % rules_python_version,
+            url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/%s.tar.gz" % rules_python_version,
+        )
 
     # https://github.com/pybind/pybind11_bazel/releases
     pybind11_version = "2.13.6"
-    http_archive(
-        name = "pybind11_bazel",
-        integrity = "sha256-yuaAZwv6boJwPAPyo8mVQIzcv0NhbXvdGY70XTwydzE=",
-        strip_prefix = "pybind11_bazel-%s" % pybind11_version,
-        url = "https://github.com/pybind/pybind11_bazel/archive/refs/tags/v%s.tar.gz" % pybind11_version,
-    )
+    if pybind11:
+        http_archive(
+            name = "pybind11_bazel",
+            integrity = "sha256-yuaAZwv6boJwPAPyo8mVQIzcv0NhbXvdGY70XTwydzE=",
+            strip_prefix = "pybind11_bazel-%s" % pybind11_version,
+            url = "https://github.com/pybind/pybind11_bazel/archive/refs/tags/v%s.tar.gz" % pybind11_version,
+        )
 
-    # https://github.com/pybind/pybind11/releases
-    pybind11_minor = int(pybind11_version.split(".")[1])
-    http_archive(
-        name = "pybind11",
-        build_file = "@pybind11_bazel//:%s" % ("pybind11.BUILD" if pybind11_minor <= 11 else "pybind11-BUILD.bazel"),
-        integrity = "sha256-4Iy4f0dz2pf6e18DXeh2OrxlbYfVdz5i9toFh9Hw7CA=",
-        strip_prefix = "pybind11-%s" % pybind11_version,
-        url = "https://github.com/pybind/pybind11/archive/refs/tags/v%s.tar.gz" % pybind11_version,
-    )
+        # https://github.com/pybind/pybind11/releases
+        pybind11_minor = int(pybind11_version.split(".")[1])
+        http_archive(
+            name = "pybind11",
+            build_file = "@pybind11_bazel//:%s" % ("pybind11.BUILD" if pybind11_minor <= 11 else "pybind11-BUILD.bazel"),
+            integrity = "sha256-4Iy4f0dz2pf6e18DXeh2OrxlbYfVdz5i9toFh9Hw7CA=",
+            strip_prefix = "pybind11-%s" % pybind11_version,
+            url = "https://github.com/pybind/pybind11/archive/refs/tags/v%s.tar.gz" % pybind11_version,
+        )

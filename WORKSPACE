@@ -27,7 +27,7 @@ vila_workspace1()
 
 load("@vila//vila:workspace2.bzl", vila_workspace2 = "workspace")
 
-vila_workspace2()
+vila_workspace2(sycl = True)
 
 # load("@bazel_features//:deps.bzl", "bazel_features_deps")
 # load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")

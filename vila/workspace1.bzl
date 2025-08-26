@@ -24,55 +24,70 @@ must be express and approved by Intel in writing.
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load(
     "@vila//vila/bazel/bzlmod:extensions.bzl",
-    "load_spdlog",
     "load_hedron",
-    "load_rangev3",
     "load_ittapi",
+    "load_rangev3",
+    "load_spdlog",
 )
 
-def workspace():
+def workspace(gtest = True, benchmark = True, protobuf = True, fmt = True, spdlog = True, rangev3 = True, hedron = True, ittapi = True):
     """Loads a set of vila dependencies. To be used in a WORKSPACE file.
+
+    Args:
+        gtest: Whether to include Google Test.
+        benchmark: Whether to include Google Benchmark.
+        protobuf: Whether to include Protocol Buffers.
+        fmt: Whether to include {fmt}.
+        spdlog: Whether to include spdlog.
+        rangev3: Whether to include range-v3.
+        hedron: Whether to include Hedron.
+        ittapi: Whether to include Intel ITT API.
     """
 
     # https://github.com/google/googletest/releases
     gtest_version = "1.17.0"
-    http_archive(
-        name = "com_google_googletest",
-        integrity = "sha256-Zfq3AdmCnTjLd8FKzcQx0hCL/b+JeeQOuK5Wft8Qsnw=",
-        strip_prefix = "googletest-%s" % gtest_version,
-        url = "https://github.com/google/googletest/archive/refs/tags/v%s.tar.gz" % gtest_version,
-    )
+    if gtest:
+        http_archive(
+            name = "com_google_googletest",
+            integrity = "sha256-Zfq3AdmCnTjLd8FKzcQx0hCL/b+JeeQOuK5Wft8Qsnw=",
+            strip_prefix = "googletest-%s" % gtest_version,
+            url = "https://github.com/google/googletest/archive/refs/tags/v%s.tar.gz" % gtest_version,
+        )
 
     # https://github.com/google/benchmark/releases
     benchmark_version = "1.9.2"
-    http_archive(
-        name = "com_google_benchmark",
-        integrity = "sha256-QJB1F2Fo3Ea7uBt0wbS2kAOFtdFr/BgdZ4r7Bg2Si9M=",
-        strip_prefix = "benchmark-%s" % benchmark_version,
-        url = "https://github.com/google/benchmark/archive/refs/tags/v%s.tar.gz" % benchmark_version,
-    )
+    if benchmark:
+        http_archive(
+            name = "com_google_benchmark",
+            integrity = "sha256-QJB1F2Fo3Ea7uBt0wbS2kAOFtdFr/BgdZ4r7Bg2Si9M=",
+            strip_prefix = "benchmark-%s" % benchmark_version,
+            url = "https://github.com/google/benchmark/archive/refs/tags/v%s.tar.gz" % benchmark_version,
+        )
 
     # https://github.com/protocolbuffers/protobuf/releases
     protobuf_version = "29.4"
-    http_archive(
-        name = "com_google_protobuf",
-        integrity = "sha256-a9ncyRsX7yXCat+G23HGfsAkMdyS6Vier4LiKIkjBJY=",
-        strip_prefix = "protobuf-%s" % protobuf_version,
-        url = "https://github.com/google/protobuf/archive/refs/tags/v%s.tar.gz" % protobuf_version,
-    )
+    if protobuf:
+        http_archive(
+            name = "com_google_protobuf",
+            integrity = "sha256-a9ncyRsX7yXCat+G23HGfsAkMdyS6Vier4LiKIkjBJY=",
+            strip_prefix = "protobuf-%s" % protobuf_version,
+            url = "https://github.com/google/protobuf/archive/refs/tags/v%s.tar.gz" % protobuf_version,
+        )
 
     # https://github.com/fmtlib/fmt/releases
     fmt_version = "11.2.0"
-    http_archive(
-        name = "fmt",
-        build_file = "@vila//vila/bazel:fmt.BUILD",
-        integrity = "sha256-vCMGbYerMWjyfO8+l9VF+mMxT1x5316kRNQdVvlixq8=",
-        strip_prefix = "fmt-%s" % fmt_version,
-        url = "https://github.com/fmtlib/fmt/archive/refs/tags/%s.tar.gz" % fmt_version,
-    )
+    if fmt:
+        http_archive(
+            name = "fmt",
+            build_file = "@vila//vila/bazel:fmt.BUILD",
+            integrity = "sha256-vCMGbYerMWjyfO8+l9VF+mMxT1x5316kRNQdVvlixq8=",
+            strip_prefix = "fmt-%s" % fmt_version,
+            url = "https://github.com/fmtlib/fmt/archive/refs/tags/%s.tar.gz" % fmt_version,
+        )
 
     # https://github.com/gabime/spdlog/releases
-    load_spdlog(None)
+    if spdlog:
+        load_spdlog(None)
 
     # # https://github.com/abseil/abseil-cpp/releases
     # http_archive(
@@ -83,12 +98,15 @@ def workspace():
     # )
 
     # https://github.com/ericniebler/range-v3
-    load_rangev3(None)
+    if rangev3:
+        load_rangev3(None)
 
     # Hedron's Compile Commands Extractor for Bazel
     # https://github.com/hedronvision/bazel-compile-commands-extractor
-    load_hedron(None)
+    if hedron:
+        load_hedron(None)
 
     # Intel® Instrumentation and Tracing Technology (ITT) and Just-In-Time (JIT) API
     # https://github.com/intel/ittapi
-    load_ittapi(None)
+    if ittapi:
+        load_ittapi(None)
