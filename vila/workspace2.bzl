@@ -44,10 +44,10 @@ def workspace(bullseye = False, sycl = False):
     if sycl:
         sycl_configure(name = "local_config_sycl")
 
-    # After bazel 6.4:
-    # For extra copt needed for sycl, it is convenient to specify '--config=sycl'
-    native.register_toolchains(
-        "@local_config_sycl//:cc-toolchain-x64_sycl",
-        # Comment out the following line to use the bullseye.
-        # "@local_config_bullseye//:cc-toolchain-x64_windows",
-    )
+        # After bazel 6.4:
+        # For extra copt needed for sycl, it is convenient to specify '--config=sycl'
+        native.register_toolchains(
+            "@local_config_sycl//:cc-toolchain-x64_sycl",
+            # Comment out the following line to use the bullseye.
+            # "@local_config_bullseye//:cc-toolchain-x64_windows",
+        )

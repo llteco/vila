@@ -70,6 +70,9 @@ def get_llvm_version(repository_ctx):
         str: llvm version
     """
     oneapi_path = find_oneapi_path(repository_ctx)
+    if not oneapi_path:
+        return "llvm-unknown"
+
     llvm_path = repository_ctx.path(oneapi_path).get_child("lib", "clang")
     for v in llvm_path.readdir():
         return v.basename
@@ -80,8 +83,8 @@ def _overwrite_sycl_msvc(repository_ctx, msvc_vars, target_arch):
     llvm_version = get_llvm_version(repository_ctx)
 
     # convert symbolic link to real path
-    oneapi_path = str(repository_ctx.path(oneapi_path).realpath)
     if oneapi_path:
+        oneapi_path = str(repository_ctx.path(oneapi_path).realpath)
         if target_arch == "x64":
             msvc_vars["%{msvc_cl_path_" + target_arch + "}"] = oneapi_path + "/bin/icx-cl.exe"
             msvc_vars["%{msvc_link_path_" + target_arch + "}"] = oneapi_path + "/bin/icx-cl.exe"
