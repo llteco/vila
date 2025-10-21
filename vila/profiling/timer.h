@@ -1,7 +1,7 @@
 /*
  * INTEL CONFIDENTIAL
  *
- * Copyright (C) 2021-2023 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * This software and the related documents are Intel copyrighted materials,
  * and your use of them is governed by the express license under which they
@@ -25,6 +25,12 @@
 #include <vector>
 
 namespace vila {
+
+enum class ProfileFormat {
+  text,
+  json,
+};
+
 /**
  * @brief Recording execution time (of CPU)
  */
@@ -44,7 +50,7 @@ class Profiler {
 
   void AddProfile(std::string_view tag, std::chrono::nanoseconds ns);
 
-  void PrintAnalyze() const;
+  void PrintAnalyze(ProfileFormat format = ProfileFormat::text) const;
 
  private:
   Profiler();

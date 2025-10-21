@@ -29,11 +29,11 @@ load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def load_spdlog(ctx):
     # https://github.com/gabime/spdlog/releases
-    spdlog_version = "1.15.3"
+    spdlog_version = "1.16.0"
     http_archive(
         name = "spdlog",
         build_file = "@vila//vila/bazel:spdlog.BUILD",
-        integrity = "sha256-FaBOacIi62wBCUtcf/iiSbNrsieI1yUZZG+4X+smfmc=",
+        integrity = "sha256-h0F1PkiKeN0NACTJgOH7W1yFiIRH4wnZy52Um9tSqj4=",
         strip_prefix = "spdlog-%s" % spdlog_version,
         url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
     )

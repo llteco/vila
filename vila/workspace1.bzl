@@ -75,12 +75,12 @@ def workspace(gtest = True, benchmark = True, protobuf = True, fmt = True, spdlo
         )
 
     # https://github.com/fmtlib/fmt/releases
-    fmt_version = "11.2.0"
+    fmt_version = "12.0.0"
     if fmt:
         http_archive(
             name = "fmt",
             build_file = "@vila//vila/bazel:fmt.BUILD",
-            integrity = "sha256-vCMGbYerMWjyfO8+l9VF+mMxT1x5316kRNQdVvlixq8=",
+            integrity = "sha256-qj6Pu2oAZsA0VENK3R8fwjKZ6FdYzuwNfS2XRDFIHkA=",
             strip_prefix = "fmt-%s" % fmt_version,
             url = "https://github.com/fmtlib/fmt/archive/refs/tags/%s.tar.gz" % fmt_version,
         )

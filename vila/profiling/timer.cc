@@ -1,7 +1,7 @@
 /*
  * INTEL CONFIDENTIAL
  *
- * Copyright (C) 2021-2023 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * This software and the related documents are Intel copyrighted materials,
  * and your use of them is governed by the express license under which they
@@ -24,6 +24,7 @@
 
 #include "clim/numerical.h"
 #include "clim/vt/vt.h"
+#include "vila/config/json.hpp"
 #include "vila/logging/logger.h"
 
 #ifdef _WIN32
@@ -41,7 +42,7 @@ struct Profiler::ProfilerImpl {
   void StartProfile(const std::string& tag);
   void EndProfile(const std::string& tag);
   void AddProfile(const std::string& tag, std::chrono::nanoseconds ns);
-  void PrintAnalyze() const;
+  void PrintAnalyze(ProfileFormat format) const;
   TimePoint StartTime();
 
   std::mutex mutex_;
@@ -62,10 +63,12 @@ void Profiler::ProfilerImpl::EndProfile(const std::string& tag) {
   std::lock_guard<std::mutex> locker(mutex_);
   if (tp_.count(tag) != 0) {
     auto endpoint = std::chrono::high_resolution_clock::now();
-    events_[tag].push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(
-                               endpoint - tp_[tag]
-    )
-                               .count());
+    events_[tag].push_back(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            endpoint - tp_[tag]
+        )
+            .count()
+    );
     tp_.erase(tag);
   }
 }
@@ -77,7 +80,8 @@ void Profiler::ProfilerImpl::AddProfile(
   events_[tag].push_back(ns.count());
 }
 
-void Profiler::ProfilerImpl::PrintAnalyze() const {
+void Profiler::ProfilerImpl::PrintAnalyze(ProfileFormat format) const {
+  nlohmann::json results;
   for (const auto& event : events_) {
     const auto& ds = event.second;
     auto avg = vt::ReduceMean(ds) / 1e6;
@@ -85,10 +89,25 @@ void Profiler::ProfilerImpl::PrintAnalyze() const {
     auto med = numeric_div<double>(vt::Median(ds), 1e6);
     auto longest = numeric_div<double>(vt::ReduceMax(ds), 1e6);
     auto shortest = numeric_div<double>(vt::ReduceMin(ds), 1e6);
-    LOGI(
-        "{}: MED={:.2f} AVG={:.2f} STD={:.2} MAX={:.2f} MIN={:.2f} CALL={}",
-        event.first, med, avg, std, longest, shortest, ds.size()
-    );
+    if (format == ProfileFormat::text) {
+      fmt::println(
+          "{}: MED={:.2f} AVG={:.2f} STD={:.2} MAX={:.2f} MIN={:.2f} CALL={}",
+          event.first, med, avg, std, longest, shortest, ds.size()
+      );
+    } else if (format == ProfileFormat::json) {
+      nlohmann::json item;
+      item["name"] = event.first;
+      item["med"] = med;
+      item["avg"] = avg;
+      item["std"] = std;
+      item["max"] = longest;
+      item["min"] = shortest;
+      item["call"] = ds.size();
+      results.push_back(item);
+    }
+  }
+  if (format == ProfileFormat::json) {
+    fmt::println("{}", results.dump(4));
   }
 }
 
@@ -117,7 +136,9 @@ void Profiler::AddProfile(std::string_view tag, std::chrono::nanoseconds ns) {
   p_impl_->AddProfile(std::string(tag), ns);
 }
 
-void Profiler::PrintAnalyze() const { p_impl_->PrintAnalyze(); }
+void Profiler::PrintAnalyze(ProfileFormat format) const {
+  p_impl_->PrintAnalyze(format);
+}
 
 #ifdef _WIN32
 /**

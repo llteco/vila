@@ -32,6 +32,7 @@ vila_cc_library(
     deps = [
         "@vila//clim:math",
         "@vila//clim:vt",
+        "@vila//vila/config:json",
         "@vila//vila/logging:logger",
     ],
 )

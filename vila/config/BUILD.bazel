@@ -1,7 +1,7 @@
 """
 INTEL CONFIDENTIAL
 
-Copyright (C) 2023 Intel Corporation. All Rights Reserved.
+Copyright (C) 2025 Intel Corporation. All Rights Reserved.
 
 The source code contained or described herein and all documents
 related to the source code ("Material") are owned by Intel Corporation
@@ -29,6 +29,7 @@ vila_cc_library(
         "json.hpp",
         "json_fwd.hpp",
     ],
+    visibility = ["//vila:__subpackages__"],
 )
 
 vila_cc_library(
