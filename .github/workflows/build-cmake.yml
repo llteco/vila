@@ -6,19 +6,21 @@ on:
       - 'clim/**'
       - 'vila/**'
       - '**/CMakeLists.txt'
+  workflow_dispatch:
+
 jobs:
   build-vila-cmake:
-    runs-on: [self-hosted, Linux]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
       - name: lfs fetch
         run: git submodule foreach --recursive git lfs pull
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: download cmake
         run: |
           python -m pip install -U cmake ninja
