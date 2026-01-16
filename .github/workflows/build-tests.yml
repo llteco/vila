@@ -7,23 +7,26 @@ on:
       - 'vila/**'
       - 'tests/**'
       - '*.bazel'
+  workflow_dispatch:
+
 jobs:
   test-vila:
-    runs-on: [self-hosted, Linux]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
       - name: lfs fetch
         run: git submodule foreach --recursive git lfs pull
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: download bazel
-        run: |
-          if ! which bazelisk; then wget https://github.com/bazelbuild/bazelisk/releases/download/v1.21.0/bazelisk-linux-amd64 && chmod +x bazelisk-linux-amd64 && export PATH=$PATH:`pwd`; fi
-          if [ -e bazelisk-linux-amd64 ]; then mv ./bazelisk-linux-amd64 bazelisk; fi
+          python-version: "3.12"
+      - uses: bazel-contrib/setup-bazel@0.15.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
       - name: build and test package
         run: bazelisk test //tests/...
       - name: build using legacy WORKSPACE
