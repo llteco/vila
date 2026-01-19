@@ -1,17 +1,18 @@
-/*
- * INTEL CONFIDENTIAL
+/************************************************************************
+ * Copyright (C) 2021-2026 The CLIM Authors.
  *
- * Copyright (C) 2021-2023 Intel Corporation
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This software and the related documents are Intel copyrighted materials,
- * and your use of them is governed by the express license under which they
- * were provided to you ("License"). Unless the License provides otherwise,
- * you may not use, modify, copy, publish, distribute, disclose or transmit
- * this software or the related documents without Intel's prior written
- * permission. This software and the related documents are provided as is, with
- * no express or implied warranties, other than those that are expressly stated
- * in the License.
- */
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
 /****************************************
  * Description: unit test for vector tensor
  ****************************************/
@@ -24,7 +25,7 @@
 using namespace vt;
 using std::vector;
 
-TEST(vttest_cm, Conv) {
+TEST(VtTestNN, Conv) {
   vector<int> ws{4, 1, 3, 3};
   vector<float> w;
   for (int i = 0; i < PI(ws); i++) {
@@ -146,7 +147,7 @@ TEST(vttest_cm, Conv) {
   }
 }
 
-TEST(vttest_cm, AtrousConv) {
+TEST(VtTestNN, AtrousConv) {
   vector<int> ws{2, 1, 3, 3};
   vector<float> w;
   for (int i = 0; i < PI(ws); i++) {
@@ -164,7 +165,7 @@ TEST(vttest_cm, AtrousConv) {
   }
 }
 
-TEST(vttest_cm, ConvStride) {
+TEST(VtTestNN, ConvStride) {
   auto fn = [&](int oc, int ic, int ksize, int stride, int padding) {
     vector<int> ws{oc, ic, ksize, ksize};
     auto w = vt::Arange<vector<float>>(0, PI(ws));
@@ -191,7 +192,7 @@ TEST(vttest_cm, ConvStride) {
   }
 }
 
-TEST(vttest_cm, ConvTranspose) {
+TEST(VtTestNN, ConvTranspose) {
   auto fn = [&](int oc, int ic, int ksize, int stride, int padding = 0,
                 int output_padding = 0, int groups = 1, int dilation = 1) {
     vector<int> ws{ic, oc / groups, ksize, ksize};
@@ -286,7 +287,7 @@ TEST(vttest_cm, ConvTranspose) {
   }
 }
 
-TEST(vttest_cm, AvgPool) {
+TEST(VtTestNN, AvgPool) {
   vector<float> a{1, 2, 3, 4, 5, 6, 7, 8};
   vector<int> shape{1, 2, 4, 1};
   auto b = AvgPool(a, shape, 2);
@@ -294,7 +295,7 @@ TEST(vttest_cm, AvgPool) {
   EXPECT_FLOAT_EQ(b[1], 5.5f);
 }
 
-TEST(vttest_cm, BroadcastAdd) {
+TEST(VtTestNN, BroadcastAdd) {
   vector<float> a = vt::Arange<vector<float>>(1, 5);
   auto b = BroadcastAdd(a, vector<int>{2, 2}, {1}, {});
   for (int i = 0; i < b.size(); i++) {
@@ -317,5 +318,29 @@ TEST(vttest_cm, BroadcastAdd) {
     for (int j = 0; j < x.size(); j++) {
       EXPECT_EQ(x[j], y[j] + b[i]);
     }
+  }
+}
+
+TEST(VtTestNN, Softmax) {
+  vector<float> a{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+  vector<int> shape{2, 3};
+  auto b = Softmax(a, shape, /*dim=*/0);
+  EXPECT_EQ(b.size(), 6);
+  vector<float> gold(6, 0.f);
+  for (int i = 0; i < 3; i++) {
+    float max_val = 0;
+    for (int j = 0; j < 2; j++) {
+      max_val = std::max(max_val, a[j * 3 + i]);
+    }
+    float sum_exp = 0;
+    for (int j = 0; j < 2; j++) {
+      sum_exp += std::exp(a[j * 3 + i] - max_val);
+    }
+    for (int j = 0; j < 2; j++) {
+      gold[j * 3 + i] = std::exp(a[j * 3 + i] - max_val) / sum_exp;
+    }
+  }
+  for (int i = 0; i < gold.size(); i++) {
+    EXPECT_NEAR(b[i], gold[i], 1e-5) << "at index " << i;
   }
 }
