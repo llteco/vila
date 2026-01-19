@@ -1,20 +1,22 @@
-/*
- * INTEL CONFIDENTIAL
+/************************************************************************
+ * Copyright (C) 2021-2026 The CLIM Authors.
  *
- * Copyright (C) 2021-2023 Intel Corporation
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This software and the related documents are Intel copyrighted materials,
- * and your use of them is governed by the express license under which they
- * were provided to you ("License"). Unless the License provides otherwise,
- * you may not use, modify, copy, publish, distribute, disclose or transmit
- * this software or the related documents without Intel's prior written
- * permission. This software and the related documents are provided as is, with
- * no express or implied warranties, other than those that are expressly stated
- * in the License.
- */
-/****************************************
- * Description: vector tensor for nerual network
- ****************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
+
+/***********************************************
+ * Description: vector tensor for neural network
+ ***********************************************/
 #ifndef CLIM_VT_VT_NN_H_
 #define CLIM_VT_VT_NN_H_
 #include <iterator>
@@ -395,6 +397,78 @@ Container Tanh(const Container& a) {
   for (auto& _a : a) {
     double ans = (exp(2 * _a) - 1.0) / (exp(2 * _a) + 1.0);
     y.push_back(static_cast<T>(ans));
+  }
+  return y;
+}
+
+/**
+ * @brief Softmax activation.
+ * Applies the Softmax function along the specified dimension.
+ * >>> Softmax(x_i) = exp(x_i - x_max) / sum_j(exp(x_j - x_max))
+ *
+ * @tparam Container
+ * @tparam Shape
+ * @param a
+ * @param as
+ * @param dim
+ * @return Container
+ */
+template <
+    class Container,
+    class Shape,
+    must_be_float<typename Container::value_type> = 0,
+    must_be_int<typename Shape::value_type> = 0>
+Container Softmax(const Container& a, const Shape& as, int64_t dim = -1) {
+  typedef typename Container::value_type T;
+  typedef typename Shape::value_type U;
+  Container y;
+  Shape ys = as;
+  if (dim < 0) {
+    dim += as.size();
+  }
+  if (dim < 0 || dim >= as.size()) {
+    printf("%s: Dimension out of range!!\n", __FUNCTION__);
+    return y;
+  }
+
+  U dim_size = as[dim];
+  U outer_size = 1, inner_size = 1;
+  for (U i = 0; i < dim; i++) {
+    outer_size *= as[i];
+  }
+  for (U i = dim + 1; i < as.size(); i++) {
+    inner_size *= as[i];
+  }
+  y.resize(a.size());
+  for (U outer = 0; outer < outer_size; outer++) {
+    for (U inner = 0; inner < inner_size; inner++) {
+      // find max value
+      T max_val = std::numeric_limits<T>::lowest();
+      for (U d = 0; d < dim_size; d++) {
+        U index = outer;
+        index = index * dim_size + d;
+        index = index * inner_size + inner;
+        if (a[index] > max_val) {
+          max_val = a[index];
+        }
+      }
+      // compute sum of exp
+      T sum_exp = T(0);
+      for (U d = 0; d < dim_size; d++) {
+        U index = outer;
+        index = index * dim_size + d;
+        index = index * inner_size + inner;
+        sum_exp += static_cast<T>(exp(static_cast<double>(a[index] - max_val)));
+      }
+      // compute softmax
+      for (U d = 0; d < dim_size; d++) {
+        U index = outer;
+        index = index * dim_size + d;
+        index = index * inner_size + inner;
+        y[index] =
+            static_cast<T>(exp(static_cast<double>(a[index] - max_val))) / sum_exp;
+      }
+    }
   }
   return y;
 }
