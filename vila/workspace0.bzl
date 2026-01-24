@@ -43,7 +43,7 @@ def workspace(skylib = True, rules_cc = True, rules_foreign_cc = True, rules_pyt
     bazel_features_version = "1.36.0"
     http_archive(
         name = "bazel_features",
-        integrity = "sha256-2FLzic6NuLjC+YB6T68GWw0LowIWOJjNJCi2yn0IZoE=",
+        integrity = "sha256-k5CzkaaNOySu95ZrzoVW0oAD/j8CKlAI78eAforKrxo=",
         strip_prefix = "bazel_features-%s" % bazel_features_version,
         url = "https://github.com/bazel-contrib/bazel_features/archive/refs/tags/v%s.tar.gz" % bazel_features_version,
     )
