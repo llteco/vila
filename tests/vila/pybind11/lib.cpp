@@ -27,5 +27,8 @@
 namespace py = pybind11;
 using namespace py::literals;  // NOLINT(*-using-namespace)
 
-PYBIND11_MODULE(lib, m) {  // NOLINT
+PYBIND11_MODULE(pybind_test, m) {  // NOLINT
+  m.doc() = "PYBIND11 TEST";
+  m.def("hello", []() { return "Hello, World!"; });
+  m.def("add", [](int a, int b) { return a + b; }, "a"_a, "b"_a);
 }
