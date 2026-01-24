@@ -93,7 +93,7 @@ def workspace(skylib = True, rules_cc = True, rules_foreign_cc = True, rules_pyt
         pybind11_minor = int(pybind11_version.split(".")[1])
         http_archive(
             name = "pybind11",
-            build_file = "@pybind11_bazel//:%s" % ("pybind11.BUILD" if (pybind11_major <=2 and pybind11_minor <= 11) else "pybind11-BUILD.bazel"),
+            build_file = "@pybind11_bazel//:%s" % ("pybind11.BUILD" if (pybind11_major <= 2 and pybind11_minor <= 11) else "pybind11-BUILD.bazel"),
             integrity = "sha256-RTsaPismbDrp2ockEcrbbWk6wYBjvXMibZbPtwFaIAw=",
             strip_prefix = "pybind11-%s" % pybind11_version,
             url = "https://github.com/pybind/pybind11/archive/refs/tags/v%s.tar.gz" % pybind11_version,
