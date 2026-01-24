@@ -14,4 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-__version__ = "1.0.5"
+load("@nanobind_bazel//:build_defs.bzl", "nanobind_extension", "nanobind_library", "nanobind_stubgen")
+load("@rules_python//python:py_test.bzl", "py_test")
+
+nanobind_library(
+    name = "lib",
+    srcs = ["lib.cpp"],
+    alwayslink = True,
+)
+
+nanobind_extension(
+    name = "nanobind_test",
+    deps = [":lib"],
+)
+
+nanobind_stubgen(
+    name = "lib_stubgen",
+    module = ":nanobind_test",
+)
+
+py_test(
+    name = "test_import",
+    srcs = ["test_import.py"],
+    data = [":nanobind_test"],
+)

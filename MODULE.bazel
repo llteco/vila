@@ -1,42 +1,36 @@
 """
-INTEL CONFIDENTIAL
+Copyright (C) 2026 The VILA Authors.
 
-Copyright (C) 2025 Intel Corporation. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-The source code contained or described herein and all documents
-related to the source code ("Material") are owned by Intel Corporation
-or licensors. Title to the Material remains with Intel
-Corporation or its licensors. The Material contains trade
-secrets and proprietary and confidential information of Intel or its
-licensors. The Material is protected by worldwide copyright
-and trade secret laws and treaty provisions. No part of the Material may
-be used, copied, reproduced, modified, published, uploaded, posted,
-transmitted, distributed, or disclosed in any way without Intel's prior
-express written permission.
+    http://www.apache.org/licenses/LICENSE-2.0
 
-No License under any patent, copyright, trade secret or other intellectual
-property right is granted to or conferred upon you by disclosure or
-delivery of the Materials, either expressly, by implication, inducement,
-estoppel or otherwise. Any license under such intellectual property rights
-must be express and approved by Intel in writing.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
-module(name = "vila", version = "1.0.4")
+module(name = "vila", version = "1.0.5")
 
-bazel_dep(name = "bazel_skylib", version = "1.7.1")
-bazel_dep(name = "bazel_features", version = "1.29.0")
-bazel_dep(name = "rules_cc", version = "0.2.8")
-bazel_dep(name = "rules_python", version = "1.4.1")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "bazel_features", version = "1.36.0")
+bazel_dep(name = "rules_cc", version = "0.2.9")
+bazel_dep(name = "rules_python", version = "1.8.1")
 bazel_dep(name = "rules_foreign_cc", version = "0.14.0")
 bazel_dep(name = "googletest", version = "1.17.0", repo_name = "com_google_googletest")
 bazel_dep(name = "google_benchmark", version = "1.9.2", repo_name = "com_google_benchmark")
-bazel_dep(name = "pybind11_bazel", version = "2.13.6")
+bazel_dep(name = "pybind11_bazel", version = "3.0.0")
+bazel_dep(name = "nanobind_bazel", version = "2.10.2")
 bazel_dep(name = "fmt", version = "12.0.0")
-# bazel_dep(name = "abseil-cpp", version = "20240116.2")
+bazel_dep(name = "platforms", version = "1.0.0")  # python config depends platforms
 
-bazel_dep(name = "platforms", version = "0.0.11")  # python config depends platforms
-py_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "python_configure_extension")
-use_repo(py_config_ext, "local_config_python")
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.defaults(python_version = "3.12")
+python.toolchain(python_version = "3.12")
 
 wdk_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "wdk_configure_extension")
 use_repo(wdk_config_ext, "local_config_wdk")
