@@ -153,7 +153,7 @@ TEST(PathTest, RGlob) {
   auto glob_or_results = f.Glob("*.foo|*.bar");
   std::sort(glob_or_results.begin(), glob_or_results.end());
   EXPECT_EQ(glob_or_results, std::vector<Path>({f / "a.foo", f / "c.bar"}));
-  EXPECT_EQ(
-      f.RGlob("*.foo"), std::vector<Path>({f / "a.foo", f / "subdir/b.foo"})
-  );
+  auto rglob_sorted = f.RGlob("*.foo");
+  std::sort(rglob_sorted.begin(), rglob_sorted.end());
+  EXPECT_EQ(rglob_sorted, std::vector<Path>({f / "a.foo", f / "subdir/b.foo"}));
 }
