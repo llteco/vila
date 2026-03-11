@@ -29,6 +29,9 @@ file(GLOB_RECURSE
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 )
+if(NOT WIN32)
+    list(FILTER VILA_SRC EXCLUDE REGEX ".*detours.*")
+endif()
 
 target_sources(vila PRIVATE ${VILA_SRC})
 target_link_libraries(vila PUBLIC fmt)
