@@ -1,7 +1,7 @@
 """
-Copyright (c) 2024 Intel Corporation
+Copyright (c) 2024-2026 Wenyi Tang
 Author: Wenyi Tang
-E-mail: wenyi.tang@intel.com
+E-mail: wenyitang@outlook.com
 
 Use precompiled headers (PCH) on Windows MSVC to speed up build time.
 

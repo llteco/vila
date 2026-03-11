@@ -1,10 +1,11 @@
 """
-Copyright (c) 2024 Intel Corporation
+Copyright (c) 2024-2026 Wenyi Tang
 Author: Wenyi Tang
-E-mail: wenyi.tang@intel.com
-
+E-mail: wenyitang@outlook.com
 """
 
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("//vila/bazel:pre_compile.bzl", "pch_library")
 
 flags = pch_library(
@@ -20,9 +21,21 @@ cc_library(
     includes = ["lib"],
 )
 
-cc_test(
+genrule(
+    name = "main_after_pch",
+    srcs = [
+        "main.cpp",
+        ":pch",
+    ],
+    outs = ["main.after_pch.cpp"],
+    # Force test source generation to wait for :pch outputs.
+    cmd_bash = "cp $(location main.cpp) $@",
+    cmd_bat = "copy /Y $(location main.cpp) $@ >NUL",
+)
+
+cc_binary(
     name = "test_pch",
-    srcs = ["main.cpp"],
+    srcs = [":main_after_pch"],
     copts = select({
         "@platforms//os:windows": flags,
         "//conditions:default": [],

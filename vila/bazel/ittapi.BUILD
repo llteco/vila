@@ -1,9 +1,10 @@
 """
-Copyright (c) 2025 Intel Corporation
+Copyright (c) 2025-2026 Wenyi Tang
 Author: Wenyi Tang
-E-mail: wenyi.tang@intel.com
-
+E-mail: wenyitang@outlook.com
 """
+
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(default_visibility = ["//visibility:public"])
 

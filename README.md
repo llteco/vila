@@ -27,7 +27,7 @@ bazel_dep(name = "vila")
 # currently vila is not registered in BCR
 git_override(
     module_name = "vila",
-    remote = "https://github.com/intel-innersource/frameworks.camera.cpp.vila",
+    remote = "https://github.com/llteco/vila",
     commit = "main",
 )
 ```
@@ -38,9 +38,9 @@ If you'd like to stick to using WORKSPACE, add following lines to your WORKSPACE
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "vila",
-    sha256 = "932db4e10fd8a377626d8c92040658104367d064978213e788aab8ee23482002",
-    strip_prefix = "frameworks.camera.cpp.vila-d68a3ae01e149a30e75232da1e4a53950bb31542",
-    url = "https://github.com/intel-innersource/frameworks.camera.cpp.vila/archive/d68a3ae01e149a30e75232da1e4a53950bb31542.zip",
+    sha256 = "{sha}",
+    strip_prefix = "vila-{commit}",
+    url = "https://github.com/llteco/vila/archive/{commit}.zip",
 )
 
 load("@vila//vila:workspace0.bzl", vila_workspace0 = "workspace")
@@ -74,6 +74,6 @@ python_configure(name = "local_config_python")
 1. clone vila to your repository as a submodule
 2. update vila's submodule
     ```
-    git submodule add https://github.com/intel-innersource/frameworks.camera.cpp.vila vila
+    git submodule add https://github.com/llteco/vila vila
     ```
 3. `add_subdirectory(vila)`
