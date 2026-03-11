@@ -17,7 +17,7 @@ repos:
     hooks:
     - id: codespell
       args: [-I=.github/WORDS_BAG.txt, -w]
-      exclude: (\.(diff|patch)$|graphfile_generated.py|(.*\.bzl\.tpl)|(.*json.hpp|.*json_fwd.hpp))
+      exclude: (\.(diff|patch)$|graphfile_generated.py|(.*\.bzl\.tpl)|(.*json.hpp|.*json_fwd.hpp)|(vila/hook/detours/.*))
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.3
     hooks:
