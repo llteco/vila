@@ -1,10 +1,11 @@
 """
-Copyright (c) 2024 Intel Corporation
+Copyright (c) 2024-2026 Wenyi Tang
 Author: Wenyi Tang
-E-mail: wenyi.tang@intel.com
-
+E-mail: wenyitang@outlook.com
 """
 
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("//vila/bazel:pre_compile.bzl", "pch_library")
 
 flags = pch_library(

@@ -1,11 +1,12 @@
 """
-Copyright (c) 2022 Intel Corporation
+Copyright (c) 2022-2026 Wenyi Tang
 Author: Wenyi Tang
-E-mail: wenyi.tang@intel.com
+E-mail: wenyitang@outlook.com
 
 Convenient object library for vila source code
 """
 
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load(
     "@vila//vila/bazel/vila:compile_options.bzl",
     "CXX_STD_17",
@@ -22,7 +23,7 @@ def vila_cc_library(name, **kwargs):
         **kwargs: pass other arguments.
     """
     kwargs["copts"] = DEFAULT_COPTS + kwargs.get("copts", [])
-    native.cc_library(name = name, **kwargs)
+    cc_library(name = name, **kwargs)
 
 def vila_cc_binary(name, **kwargs):
     """ Helper functions to add default copts and linkopts to cc binary.
@@ -34,7 +35,7 @@ def vila_cc_binary(name, **kwargs):
     kwargs["copts"] = DEFAULT_COPTS + kwargs.get("copts", [])
     kwargs["linkopts"] = DEFAULT_LINKOPTS + kwargs.get("linkopts", [])
     linkstatic = kwargs.pop("linkstatic", True)
-    native.cc_binary(name = name, linkstatic = linkstatic, **kwargs)
+    cc_binary(name = name, linkstatic = linkstatic, **kwargs)
 
 def vila_cc_test(name, **kwargs):
     """ Helper functions to add default copts and linkopts to cc test.
@@ -46,4 +47,4 @@ def vila_cc_test(name, **kwargs):
     kwargs["copts"] = CXX_STD_17 + UNICODE + kwargs.get("copts", [])
     kwargs["linkopts"] = DEFAULT_LINKOPTS + kwargs.get("linkopts", [])
     linkstatic = kwargs.pop("linkstatic", True)
-    native.cc_test(name = name, linkstatic = linkstatic, **kwargs)
+    cc_test(name = name, linkstatic = linkstatic, **kwargs)

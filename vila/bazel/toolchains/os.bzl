@@ -1,8 +1,7 @@
 """
-Copyright (c) 2025 Intel Corporation
+Copyright (c) 2025-2026 Wenyi Tang
 Author: Wenyi Tang
-E-mail: wenyi.tang@intel.com
-
+E-mail: wenyitang@outlook.com
 """
 
 def is_windows(ctx):

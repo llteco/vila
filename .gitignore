@@ -16,6 +16,7 @@ MODULE.bazel.lock
 *.dll
 *.so
 *.tmh
+uv.lock
 dist/
 \.eggs/
 
