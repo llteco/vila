@@ -21,24 +21,24 @@ load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def load_spdlog(ctx):
     # https://github.com/gabime/spdlog/releases
-    spdlog_version = "1.16.0"
+    spdlog_version = "1.17.0"
     http_archive(
         name = "spdlog",
         build_file = "@vila//vila/bazel:spdlog.BUILD",
-        integrity = "sha256-h0F1PkiKeN0NACTJgOH7W1yFiIRH4wnZy52Um9tSqj4=",
+        integrity = "sha256-2IYpVcbXTlhGs/WAsWBdJCixHZekENhuL7E+hXzTp0Q=",
         strip_prefix = "spdlog-%s" % spdlog_version,
         url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
     )
 
 def load_hedron(ctx):
-    # Hedron's Compile Commands Extractor for Bazel
-    # https://github.com/hedronvision/bazel-compile-commands-extractor
-    hedron_commit = "4f28899228fb3ad0126897876f147ca15026151e"
+    # Hedron's Compile Commands Extractor for Bazel (fork'd version)
+    # https://github.com/loseall/bazel-compile-commands-extractor
+    hedron_commit = "2c33c1b2a6a06ef9d4a371ba90b7325341a15f39"
     http_archive(
         name = "hedron_compile_commands",
-        integrity = "sha256-yAKektowLwoy/Q1AWTWMhle1y4JigAC3teJZxz+RiC0=",
+        integrity = "sha256-u0AvEvL4uf4pUBZ+LQTekwn+hflpJi/3ZKTOA1K8U6U=",
         strip_prefix = "bazel-compile-commands-extractor-%s" % hedron_commit,
-        url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/%s.zip" % hedron_commit,
+        url = "https://github.com/loseall/bazel-compile-commands-extractor/archive/%s.zip" % hedron_commit,
     )
 
 def load_rangev3(ctx):
@@ -54,11 +54,11 @@ def load_rangev3(ctx):
 def load_ittapi(ctx):
     # Intel® Instrumentation and Tracing Technology (ITT) and Just-In-Time (JIT) API
     # https://github.com/intel/ittapi
-    itt_version = "3.25.5"
+    itt_version = "3.26.7"
     http_archive(
         name = "ittapi",
         build_file = "@vila//vila/bazel:ittapi.BUILD",
-        integrity = "sha256-LRkkPnrIp94Iv9AFQpowjB21Khjlt7ZtKabBnwZpRuM=",
+        integrity = "sha256-KaoN1QzfDwoKIVY+r8W3znkFLBlZSmQBelHwkwSko58=",
         strip_prefix = "ittapi-%s" % itt_version,
         url = "https://github.com/intel/ittapi/archive/refs/tags/v%s.tar.gz" % itt_version,
     )
