@@ -516,7 +516,7 @@ def configure_unix_toolchain(repository_ctx, paths, cpu_value, overriden_tools):
     )
     if "builtin_include_directories" in overriden_tools:
         builtin_include_directories = _uniq(
-            builtin_include_directories + overriden_tools["builtin_include_directories"]
+            builtin_include_directories + overriden_tools["builtin_include_directories"],
         )
 
     generate_modulemap = is_clang

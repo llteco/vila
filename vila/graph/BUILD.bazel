@@ -28,8 +28,8 @@ vila_cc_library(
         ":property.h",
     ],
     deps = [
-        "@vila//clim:string",
         "@fmt",
+        "@vila//clim:string",
     ],
 )
 
