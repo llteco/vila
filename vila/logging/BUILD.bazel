@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-load("@vila//vila/bazel/vila:vila.bzl", "vila_cc_library")
 load("@local_config_wdk//:wpp.bzl", "var_providing_rule")
+load("@vila//vila/bazel/vila:vila.bzl", "vila_cc_library")
 
 var_providing_rule(name = "set_wpp_vars")
 
@@ -44,24 +44,21 @@ vila_cc_library(
         "//conditions:default": {},
     }),
     local_defines = select({
-        "@platforms//os:windows": {"ENABLE_WPP": "1"},
+        "@vila//vila:use_wpp": {"ENABLE_WPP": "1"},
         "//conditions:default": {},
     }),
     textual_hdrs = select({
-        "@platforms//os:windows": [":logger_tmh"],
+        "@vila//vila:use_wpp": [":logger_tmh"],
         "//conditions:default": [],
     }),
     visibility = ["//visibility:public"],
     deps = [
+        "@fmt",
+        "@spdlog",
         "@vila//clim:os",
         "@vila//clim:path",
         "@vila//clim:reflection",
-        "@fmt",
-        "@spdlog",
-    ] + select({
-        "@platforms//os:windows": [],
-        "//conditions:default": [],
-    }),
+    ],
 )
 
 vila_cc_library(

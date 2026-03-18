@@ -16,6 +16,7 @@ FILE: bazel options
 """
 
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -63,6 +64,16 @@ bool_flag(
 config_setting(
     name = "use_log",
     flag_values = {":with_log": "true"},
+)
+
+bool_flag(
+    name = "enable_wpp",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "use_wpp",
+    flag_values = {":enable_wpp": "true"},
 )
 
 cc_library(
