@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@vila//vila/bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
 load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
 load("@vila//vila/bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
 load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
@@ -89,4 +90,8 @@ bullseye_configure_extension = module_extension(
 
 sycl_configure_extension = module_extension(
     implementation = lambda ctx: sycl_configure(name = "local_config_sycl"),
+)
+
+tvm_ffi_extension = module_extension(
+    implementation = lambda ctx: tvm_ffi_configure(name = "tvm_ffi"),
 )

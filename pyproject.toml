@@ -47,3 +47,10 @@ disable = [
     "R",
     "I",
 ]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "I"]
+ignore = ["E203", "E231", "E241"]

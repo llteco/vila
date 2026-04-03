@@ -12,6 +12,15 @@ repos:
     - id: check-added-large-files
       args: ["--maxkb=1024"]
     - id: requirements-txt-fixer
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.15.8
+    hooks:
+    # Run the linter.
+    - id: ruff-check
+      args: [--fix]
+    # Run the formatter.
+    - id: ruff-format
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
     hooks:
@@ -22,26 +31,3 @@ repos:
     rev: 1.4.3
     hooks:
     - id: cmakelint
-  - repo: https://github.com/PyCQA/isort
-    rev: 8.0.1
-    hooks:
-    - id: isort
-      args:
-      - '--profile=black'
-  - repo: https://github.com/psf/black
-    rev: 26.3.0
-    hooks:
-    - id: black
-      args:
-      - '-vv'
-  - repo: https://github.com/PyCQA/isort
-    rev: 8.0.1
-    hooks:
-    - id: isort
-      args:
-      - '--profile=black'
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
-    hooks:
-    - id: flake8
-      additional_dependencies: [Flake8-pyproject]
