@@ -32,6 +32,7 @@ load(
     "variable_with_value",
     "with_feature_set",
 )
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 all_compile_actions = [
     ACTION_NAMES.c_compile,
@@ -83,6 +84,9 @@ all_link_actions = [
 
 def _use_msvc_toolchain(ctx):
     return ctx.attr.cpu in ["x64_windows", "arm64_windows"] and (ctx.attr.compiler == "msvc-cl" or ctx.attr.compiler == "clang-cl")
+
+def _filter_non_empty_paths(paths):
+    return [p for p in paths if p and p != "msvc_not_found"]
 
 def _impl(ctx):
     if _use_msvc_toolchain(ctx):
@@ -1430,7 +1434,7 @@ def _impl(ctx):
         features = features,
         action_configs = action_configs,
         artifact_name_patterns = artifact_name_patterns,
-        cxx_builtin_include_directories = ctx.attr.cxx_builtin_include_directories,
+        cxx_builtin_include_directories = _filter_non_empty_paths(ctx.attr.cxx_builtin_include_directories),
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
         target_system_name = ctx.attr.target_system_name,

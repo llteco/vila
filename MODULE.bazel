@@ -32,6 +32,14 @@ python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.defaults(python_version = "3.12")
 python.toolchain(python_version = "3.12")
 
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "vila_pip_deps",
+    python_version = "3.12",
+    requirements_lock = "//tests/vila:requirements_tvm_ffi_test.txt",
+)
+use_repo(pip, "vila_pip_deps")
+
 wdk_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "wdk_configure_extension")
 use_repo(wdk_config_ext, "local_config_wdk")
 
@@ -52,6 +60,10 @@ use_repo(hedron_ext, "hedron_compile_commands")
 
 sycl_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "sycl_configure_extension")
 use_repo(sycl_config_ext, "local_config_sycl")
+
+# TVM FFI support (optional - requires: pip install apache-tvm-ffi)
+tvm_ffi_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
+use_repo(tvm_ffi_ext, "tvm_ffi")
 
 register_toolchains(
     # to use sycl specify: --config=sycl

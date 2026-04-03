@@ -26,7 +26,10 @@ vila_workspace1()
 
 load("@vila//vila:workspace2.bzl", vila_workspace2 = "workspace")
 
-vila_workspace2(sycl = True)
+vila_workspace2(
+    sycl = False,
+    tvm_ffi = True,
+)
 
 # load("@bazel_features//:deps.bzl", "bazel_features_deps")
 # load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
@@ -47,3 +50,15 @@ python_register_toolchains(
     name = "local_config_python",
     python_version = "3.13",
 )
+
+load("@rules_python//python:pip.bzl", "pip_parse")
+
+pip_parse(
+    name = "vila_pip_deps",
+    python_interpreter = "python",
+    requirements_lock = "//tests/vila:requirements_tvm_ffi_test.txt",
+)
+
+load("@vila_pip_deps//:requirements.bzl", "install_deps")
+
+install_deps()

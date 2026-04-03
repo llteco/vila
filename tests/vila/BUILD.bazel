@@ -14,7 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_python//python:defs.bzl", "py_test")
+load("@vila_pip_deps//:requirements.bzl", "requirement")
 load("//vila/bazel/vila:vila.bzl", "vila_cc_test")
+
+cc_binary(
+    name = "tvm_ffi_call",
+    srcs = ["tvm_ffi_call.cpp"],
+    linkshared = True,
+    deps = [
+        "@fmt",
+        "@tvm_ffi",
+    ],
+)
+
+py_test(
+    name = "tvm_ffi_call_test",
+    srcs = ["tvm_ffi_call_test.py"],
+    data = [":tvm_ffi_call"],
+    deps = [
+        requirement("apache-tvm-ffi"),
+        requirement("numpy"),
+        requirement("typing-extensions"),
+    ],
+)
 
 vila_cc_test(
     name = "config_test",

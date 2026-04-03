@@ -78,6 +78,22 @@ def get_llvm_version(repository_ctx):
         return v.basename
     return "llvm-unknown"
 
+def _append_template_list_entries(existing_entries, new_entries):
+    r"""Append rendered list entries to a template field without leading commas.
+
+    Args:
+        existing_entries: Existing rendered entries string (without surrounding []).
+        new_entries: List of quoted entries to append.
+
+    Returns:
+        str: Rendered entries string safe for use inside [] in BUILD templates.
+    """
+    existing = existing_entries.strip()
+    new_rendered = ",\n        ".join(new_entries)
+    if not existing:
+        return "        " + new_rendered
+    return existing + ",\n        " + new_rendered
+
 def _overwrite_sycl_msvc(repository_ctx, msvc_vars, target_arch):
     oneapi_path = find_oneapi_path(repository_ctx)
     llvm_version = get_llvm_version(repository_ctx)
@@ -96,11 +112,14 @@ def _overwrite_sycl_msvc(repository_ctx, msvc_vars, target_arch):
             oneapi_path + "/lib/clang/%s/include" % llvm_version,
             oneapi_path + "/opt/compiler/include",
         ])
-        msvc_vars["%{msvc_cxx_builtin_include_directories_" + target_arch + "}"] += ",\n        " + ",\n        ".join([
-            "\"%s\"" % (oneapi_path + "/include"),
-            "\"%s\"" % (oneapi_path + "/lib/clang/%s/include" % llvm_version),
-            "\"%s\"" % (oneapi_path + "/opt/compiler/include"),
-        ])
+        msvc_vars["%{msvc_cxx_builtin_include_directories_" + target_arch + "}"] = _append_template_list_entries(
+            msvc_vars.get("%{msvc_cxx_builtin_include_directories_" + target_arch + "}", ""),
+            [
+                "\"%s\"" % (oneapi_path + "/include"),
+                "\"%s\"" % (oneapi_path + "/lib/clang/%s/include" % llvm_version),
+                "\"%s\"" % (oneapi_path + "/opt/compiler/include"),
+            ],
+        )
     else:
         print("oneAPI DPC++ may not be installed, please check the environment variable ONEAPI_ROOT")
 

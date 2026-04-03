@@ -26,3 +26,6 @@ dist/
 /external
 /bazel-*
 htmlcov/
+
+# AI
+.claude/settings.local.json
