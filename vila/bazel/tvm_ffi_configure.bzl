@@ -20,11 +20,11 @@ Usage:
     3. Depend on @tvm_ffi//:tvm_ffi in your targets
 
 Example in MODULE.bazel:
-    tvm_ffi_ext = use_extension("@vila//:tvm_ffi_configure.bzl", "tvm_ffi_extension")
+    tvm_ffi_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
     use_repo(tvm_ffi_ext, "tvm_ffi")
 
 Example in WORKSPACE:
-    load("@vila//:tvm_ffi_configure.bzl", "tvm_ffi_configure")
+    load("@vila//vila/bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
     tvm_ffi_configure(name = "tvm_ffi")
 """
 
@@ -57,7 +57,7 @@ def _tvm_ffi_configure(repository_ctx):
         fail(
             "Python not found. Please either:\n" +
             "1. Install apache-tvm-ffi: pip install apache-tvm-ffi\n" +
-            "2. Set PYTHON_PATH environment variable\n" +
+            "2. Ensure python3 or python is available on PATH\n" +
             "3. Use python_register_toolchains in your WORKSPACE/MODULE.bazel",
         )
 

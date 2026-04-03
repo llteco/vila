@@ -26,11 +26,11 @@ bazelisk --output_base="C:/temp/_vila_workspace" build --noenable_bzlmod //...
 
 **Legacy WORKSPACE setup (Windows)** requires loading three workspace files in sequence:
 ```bazel
-load("@vila//vela:workspace0.bzl", vila_workspace0 = "workspace")
+load("@vila//vila:workspace0.bzl", vila_workspace0 = "workspace")
 vila_workspace0()
-load("@vila//vela:workspace1.bzl", vila_workspace1 = "workspace")
+load("@vila//vila:workspace1.bzl", vila_workspace1 = "workspace")
 vila_workspace1()
-load("@vela//:workspace2.bzl", vila_workspace2 = "workspace")
+load("@vila//vila:workspace2.bzl", vila_workspace2 = "workspace")
 ```
 
 ### CMake
