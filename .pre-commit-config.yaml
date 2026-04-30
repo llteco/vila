@@ -14,7 +14,7 @@ repos:
     - id: requirements-txt-fixer
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.8
+    rev: v0.15.12
     hooks:
     # Run the linter.
     - id: ruff-check
@@ -26,7 +26,7 @@ repos:
     hooks:
     - id: codespell
       args: [-I=.github/WORDS_BAG.txt, -w]
-      exclude: (\.(diff|patch)$|graphfile_generated.py|(.*\.bzl\.tpl)|(.*json.hpp|.*json_fwd.hpp)|(vila/hook/detours/.*))
+      exclude: ((\.claude/.*)|(.*\.bzl\.tpl)|(.*json.hpp|.*json_fwd.hpp)|(vila/hook/detours/.*))
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.3
     hooks:

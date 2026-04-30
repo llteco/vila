@@ -6,7 +6,7 @@ E-mail: wenyitang@outlook.com
 
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
-load("//vila/bazel:pre_compile.bzl", "pch_library")
+load("//bazel:pre_compile.bzl", "pch_library")
 
 flags = pch_library(
     name = "pch",

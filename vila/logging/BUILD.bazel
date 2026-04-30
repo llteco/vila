@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 load("@local_config_wdk//:wpp.bzl", "var_providing_rule")
-load("@vila//vila/bazel/vila:vila.bzl", "vila_cc_library")
+load("@vila//bazel/vila:vila.bzl", "vila_cc_library")
 
 var_providing_rule(name = "set_wpp_vars")
 

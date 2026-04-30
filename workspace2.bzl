@@ -1,5 +1,5 @@
 """
-Copyright (C) 2025-2026 The VILA Authors.
+Copyright (C) 2026 The VILA Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-load("@vila//vila/bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
-load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
-load("@vila//vila/bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
-load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
+load("@vila//bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
+load("@vila//bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
+load("@vila//bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
+load("@vila//bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def workspace(bullseye = False, sycl = False, tvm_ffi = False):
     """Loads a set of vila dependencies. To be used in a WORKSPACE file.
+
+    Toolchain related dependencies.
 
     Args:
         bullseye: Whether to include Bullseye Coverage.

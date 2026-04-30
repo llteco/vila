@@ -546,7 +546,7 @@ def configure_unix_toolchain(repository_ctx, paths, cpu_value, overriden_tools):
     write_builtin_include_directory_paths(repository_ctx, cc, builtin_include_directories)
     repository_ctx.template(
         "BUILD",
-        paths["@vila//vila/bazel/toolchains:BUILD_sycl_unix.tpl"],
+        paths["@vila//bazel/toolchains:BUILD_sycl_unix.tpl"],
         {
             "%{cc_toolchain_identifier}": cc_toolchain_identifier,
             "%{name}": cpu_value,

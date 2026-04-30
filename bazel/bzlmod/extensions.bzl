@@ -15,17 +15,17 @@ limitations under the License.
 """
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@vila//vila/bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
-load("@vila//vila/bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
-load("@vila//vila/bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
-load("@vila//vila/bazel/wdk:wdk_configure.bzl", "wdk_configure")
+load("@vila//bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
+load("@vila//bazel/toolchains:bullseye_cc_configure.bzl", "bullseye_configure")
+load("@vila//bazel/toolchains:sycl_cc_configure.bzl", "sycl_configure")
+load("@vila//bazel/wdk:wdk_configure.bzl", "wdk_configure")
 
 def load_spdlog(ctx):
     # https://github.com/gabime/spdlog/releases
     spdlog_version = "1.17.0"
     http_archive(
         name = "spdlog",
-        build_file = "@vila//vila/bazel:spdlog.BUILD",
+        build_file = "@vila//bazel:spdlog.BUILD",
         integrity = "sha256-2IYpVcbXTlhGs/WAsWBdJCixHZekENhuL7E+hXzTp0Q=",
         strip_prefix = "spdlog-%s" % spdlog_version,
         url = "https://github.com/gabime/spdlog/archive/refs/tags/v%s.tar.gz" % spdlog_version,
@@ -58,7 +58,7 @@ def load_ittapi(ctx):
     itt_version = "3.26.7"
     http_archive(
         name = "ittapi",
-        build_file = "@vila//vila/bazel:ittapi.BUILD",
+        build_file = "@vila//bazel:ittapi.BUILD",
         integrity = "sha256-KaoN1QzfDwoKIVY+r8W3znkFLBlZSmQBelHwkwSko58=",
         strip_prefix = "ittapi-%s" % itt_version,
         url = "https://github.com/intel/ittapi/archive/refs/tags/v%s.tar.gz" % itt_version,

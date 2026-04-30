@@ -41,12 +41,12 @@ def _wdk_configure(ctx):
 
         rc_compiler = ctx.path("{}\\x64\\rc.exe".format(wdk_bin_path))
 
-    ctx.template("BUILD.bazel", Label("@vila//vila/bazel/wdk:BUILD.tpl"))
-    ctx.template("wpp.bzl", Label("@vila//vila/bazel/wdk:wpp.bzl.tpl"), {
+    ctx.template("BUILD.bazel", Label("@vila//bazel/wdk:BUILD.tpl"))
+    ctx.template("wpp.bzl", Label("@vila//bazel/wdk:wpp.bzl.tpl"), {
         "%{tracewpp}": str(tracewpp),
         "%{wppconfig}": str(wppconfig),
     })
-    ctx.template("rc.bzl", Label("@vila//vila/bazel/wdk:rc.bzl.tpl"), {
+    ctx.template("rc.bzl", Label("@vila//bazel/wdk:rc.bzl.tpl"), {
         "%{rc_compiler}": str(rc_compiler),
         "%{system_include}": win_include_dir,
     })

@@ -16,15 +16,15 @@ limitations under the License.
 
 workspace(name = "vila")
 
-load("@vila//vila:workspace0.bzl", vila_workspace0 = "workspace")
+load("@vila//:workspace0.bzl", vila_workspace0 = "workspace")
 
 vila_workspace0()
 
-load("@vila//vila:workspace1.bzl", vila_workspace1 = "workspace")
+load("@vila//:workspace1.bzl", vila_workspace1 = "workspace")
 
 vila_workspace1()
 
-load("@vila//vila:workspace2.bzl", vila_workspace2 = "workspace")
+load("@vila//:workspace2.bzl", vila_workspace2 = "workspace")
 
 vila_workspace2(
     sycl = False,
@@ -62,3 +62,9 @@ pip_parse(
 load("@vila_pip_deps//:requirements.bzl", "install_deps")
 
 install_deps()
+
+# load("@rules_shell//shell:repositories.bzl", "rules_shell_dependencies", "rules_shell_toolchains")
+
+# rules_shell_dependencies()
+
+# rules_shell_toolchains()

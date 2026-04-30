@@ -20,11 +20,11 @@ Usage:
     3. Depend on @tvm_ffi//:tvm_ffi in your targets
 
 Example in MODULE.bazel:
-    tvm_ffi_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
+    tvm_ffi_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
     use_repo(tvm_ffi_ext, "tvm_ffi")
 
 Example in WORKSPACE:
-    load("@vila//vila/bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
+    load("@vila//bazel:tvm_ffi_configure.bzl", "tvm_ffi_configure")
     tvm_ffi_configure(name = "tvm_ffi")
 """
 

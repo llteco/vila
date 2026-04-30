@@ -42,7 +42,7 @@ config_setting(
     name = "sycl",
     constraint_values = [
         "@platforms//os:windows",
-        "@vila//vila/bazel/toolchains:sycl",
+        "@vila//bazel/toolchains:sycl",
     ],
 )
 

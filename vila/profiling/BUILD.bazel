@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-load("@vila//vila/bazel/vila:vila.bzl", "vila_cc_library")
+load("@vila//bazel/vila:vila.bzl", "vila_cc_library")
 
 package(default_visibility = ["//visibility:public"])
 

@@ -6,10 +6,10 @@ E-mail: wenyitang@outlook.com
 config cc toolchain to use oneAPI SYCL compiler (icp a.k.a dpc++)
 """
 
-load("@vila//vila/bazel/toolchains:os.bzl", "is_windows")
-load("@vila//vila/bazel/toolchains:unix_toolchain_configure.bzl", "configure_unix_toolchain")
+load("@vila//bazel/toolchains:os.bzl", "is_windows")
+load("@vila//bazel/toolchains:unix_toolchain_configure.bzl", "configure_unix_toolchain")
 load(
-    "@vila//vila/bazel/toolchains:windows_toolchain_configure.bzl",
+    "@vila//bazel/toolchains:windows_toolchain_configure.bzl",
     "get_msvc_vars",
     "get_path_env_var",
 )
@@ -148,8 +148,8 @@ def _resolve_labels(repository_ctx, labels):
 
 def _sycl_configure(repository_ctx):
     paths = _resolve_labels(repository_ctx, [
-        "@vila//vila/bazel/toolchains:BUILD_sycl.tpl",
-        "@vila//vila/bazel/toolchains:BUILD_sycl_unix.tpl",
+        "@vila//bazel/toolchains:BUILD_sycl.tpl",
+        "@vila//bazel/toolchains:BUILD_sycl_unix.tpl",
         # required by msvc
         "@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl",
         "@bazel_tools//tools/cpp:vc_installation_error.bat.tpl",
@@ -164,7 +164,7 @@ def _sycl_configure(repository_ctx):
 
     repo_name = repository_ctx.name.split("~")[-1]
     template_vars = dict({
-        "%{constraint_values}": "\"@vila//vila/bazel/toolchains:sycl\"",
+        "%{constraint_values}": "\"@vila//bazel/toolchains:sycl\"",
         "%{platform_name}": repo_name,
     })
     if is_windows(repository_ctx):
@@ -174,7 +174,7 @@ def _sycl_configure(repository_ctx):
 
         repository_ctx.template(
             "BUILD",
-            paths["@vila//vila/bazel/toolchains:BUILD_sycl.tpl"],
+            paths["@vila//bazel/toolchains:BUILD_sycl.tpl"],
             template_vars,
         )
     else:

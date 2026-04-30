@@ -20,6 +20,7 @@ bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "bazel_features", version = "1.43.0")
 bazel_dep(name = "rules_cc", version = "0.2.17")
 bazel_dep(name = "rules_python", version = "1.9.0")
+bazel_dep(name = "rules_shell", version = "0.8.0")
 bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
 bazel_dep(name = "googletest", version = "1.17.0", repo_name = "com_google_googletest")
 bazel_dep(name = "google_benchmark", version = "1.9.2", repo_name = "com_google_benchmark")
@@ -40,29 +41,29 @@ pip.parse(
 )
 use_repo(pip, "vila_pip_deps")
 
-wdk_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "wdk_configure_extension")
+wdk_config_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "wdk_configure_extension")
 use_repo(wdk_config_ext, "local_config_wdk")
 
-bullseye_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "bullseye_configure_extension")
+bullseye_config_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "bullseye_configure_extension")
 use_repo(bullseye_config_ext, "local_config_bullseye")
 
-spdlog_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "spdlog_extension")
+spdlog_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "spdlog_extension")
 use_repo(spdlog_ext, "spdlog")
 
-rangev3_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "rangev3_extension")
+rangev3_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "rangev3_extension")
 use_repo(rangev3_ext, "rangev3")
 
-ittapi_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "ittapi_extension")
+ittapi_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "ittapi_extension")
 use_repo(ittapi_ext, "ittapi")
 
-hedron_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "hedron_extension")
+hedron_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "hedron_extension")
 use_repo(hedron_ext, "hedron_compile_commands")
 
-sycl_config_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "sycl_configure_extension")
+sycl_config_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "sycl_configure_extension")
 use_repo(sycl_config_ext, "local_config_sycl")
 
 # TVM FFI support (optional - requires: pip install apache-tvm-ffi)
-tvm_ffi_ext = use_extension("@vila//vila/bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
+tvm_ffi_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
 use_repo(tvm_ffi_ext, "tvm_ffi")
 
 register_toolchains(

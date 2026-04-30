@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-load("//vila/bazel/vila:vila.bzl", "vila_cc_test")
+load("//bazel/vila:vila.bzl", "vila_cc_test")
 
 vila_cc_test(
     name = "hello_sycl",
     srcs = ["hello_sycl.cc"],
-    target_compatible_with = ["//vila/bazel/toolchains:sycl"],
+    target_compatible_with = ["//bazel/toolchains:sycl"],
     deps = [
         # We can't link gtest_main because it's not compiled by SYCL, and
         # SYCL won't able to locate entry point in that library.

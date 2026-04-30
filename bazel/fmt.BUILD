@@ -6,7 +6,7 @@ E-mail: wenyitang@outlook.com
 Follow fmt/support/bazel/BUILD.bazel
 """
 
-load("@vila//vila/bazel/vila:vila.bzl", "vila_cc_library")
+load("@vila//bazel/vila:vila.bzl", "vila_cc_library")
 
 package(default_visibility = ["//visibility:public"])
 
