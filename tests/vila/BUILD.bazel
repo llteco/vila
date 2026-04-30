@@ -17,7 +17,7 @@ limitations under the License.
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("@rules_python//python:defs.bzl", "py_test")
 load("@vila_pip_deps//:requirements.bzl", "requirement")
-load("//vila/bazel/vila:vila.bzl", "vila_cc_test")
+load("//bazel/vila:vila.bzl", "vila_cc_test")
 
 cc_binary(
     name = "tvm_ffi_call",

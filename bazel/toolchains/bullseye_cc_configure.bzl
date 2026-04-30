@@ -6,9 +6,9 @@ E-mail: wenyitang@outlook.com
 config cc toolchain to use bullseye instruments
 """
 
-load("@vila//vila/bazel/toolchains:os.bzl", "is_windows")
+load("@vila//bazel/toolchains:os.bzl", "is_windows")
 load(
-    "@vila//vila/bazel/toolchains:windows_toolchain_configure.bzl",
+    "@vila//bazel/toolchains:windows_toolchain_configure.bzl",
     "get_clang_cl_vars",
     "get_msvc_vars",
     "get_path_env_var",
@@ -86,7 +86,7 @@ def _resolve_labels(repository_ctx, labels):
 
 def _bullseye_configure(repository_ctx):
     paths = _resolve_labels(repository_ctx, [
-        "@vila//vila/bazel/toolchains:BUILD_bullseye.tpl",
+        "@vila//bazel/toolchains:BUILD_bullseye.tpl",
         "@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl",
         "@bazel_tools//tools/cpp:vc_installation_error.bat.tpl",
         "@bazel_tools//tools/cpp:clang_installation_error.bat.tpl",
@@ -95,7 +95,7 @@ def _bullseye_configure(repository_ctx):
     if is_windows(repository_ctx):
         repo_name = repository_ctx.name.split("~")[-1]
         template_vars = dict({
-            "%{constraint_values}": "\"@vila//vila/bazel/toolchains:bullseye\"",
+            "%{constraint_values}": "\"@vila//bazel/toolchains:bullseye\"",
             "%{platform_name}": repo_name,
         })
         msvc_vars_x64 = get_msvc_vars(repository_ctx, paths, "x64")
@@ -110,7 +110,7 @@ def _bullseye_configure(repository_ctx):
 
         repository_ctx.template(
             "BUILD",
-            paths["@vila//vila/bazel/toolchains:BUILD_bullseye.tpl"],
+            paths["@vila//bazel/toolchains:BUILD_bullseye.tpl"],
             template_vars,
         )
 

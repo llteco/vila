@@ -7,7 +7,7 @@ Use precompiled headers (PCH) on Windows MSVC to speed up build time.
 
 Usage:
 
-    load("@vila//vila/bazel:pre_compile.bzl", "pch_library")
+    load("@vila//bazel:pre_compile.bzl", "pch_library")
 
     flags = pch_library(
         name = "mypch",

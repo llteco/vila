@@ -24,13 +24,14 @@ bazelisk build --config=sycl //...
 bazelisk --output_base="C:/temp/_vila_workspace" build --noenable_bzlmod //...
 ```
 
-**Legacy WORKSPACE setup (Windows)** requires loading three workspace files in sequence:
+**Legacy WORKSPACE setup** requires loading three workspace files in sequence:
 ```bazel
-load("@vila//vila:workspace0.bzl", vila_workspace0 = "workspace")
+load("//:workspace0.bzl", vila_workspace0 = "workspace")
 vila_workspace0()
-load("@vila//vila:workspace1.bzl", vila_workspace1 = "workspace")
+load("//:workspace1.bzl", vila_workspace1 = "workspace")
 vila_workspace1()
-load("@vila//vila:workspace2.bzl", vila_workspace2 = "workspace")
+load("//:workspace2.bzl", vila_workspace2 = "workspace")
+vila_workspace2()
 ```
 
 ### CMake
@@ -45,48 +46,60 @@ cmake -Bbuild -S. -GNinja -DVILA_ENABLE_TESTING=ON
 
 ## Code Style
 
-- **Style**: Based on Google C++ Style (see `.clang-format`)
-- **Clang-tidy**: Configured in `.clang-tidy`, targets `clim/` and `vila/` headers only (excludes generated files)
-- **Pre-commit hooks**: Run via `pre-commit run -s HEAD^ -o HEAD` (see `.pre-commit-config.yaml`)
-- **Spell checking**: Codespell configured with words bag at `.github/WORDS_BAG.txt`
+- **Style**: Google C++ Style with 80-column limit (see `.clang-format`)
+- **Clang-tidy**: Targets `clim/*.h` and `vila/*.h` headers only (excludes generated files). Warnings treated as errors for readability, bugprone, and concurrency checks.
+- **Pre-commit hooks**: `pre-commit run -s HEAD^ -o HEAD` (see `.pre-commit-config.yaml`)
+- **Spell checking**: Codespell with custom words bag at `.github/WORDS_BAG.txt`
 
 ## Architecture
 
 ```
-clim/           # Header-only utility library (math, strings, containers, etc.)
-  ├── argparse/        # Command-line argument parsing
-  ├── container/       # Bounding boxes, ring buffers, etc.
-  ├── filter/          # Kalman and alpha-beta filters
-  ├── hash/            # CityHash, MurmurHash
-  ├── math/            # Quaternion, numerical utilities
-  ├── os/              # OS utilities (aligned malloc, barriers)
-  ├── path/            # Cross-platform path handling
-  ├── reflection/      # Reflection registry
-  ├── string/          # String splitting, stripping, const_string
-  ├── vt/              # Vector math (GEMM, neural network ops)
-  └── zip/             # Zip utility functions
+clim/           # Header-only utility library
+  ├── argparse         # Command-line argument parsing (depends on //clim:string)
+  ├── container        # Bounding boxes, ring buffers, array arithmetic
+  ├── filter           # Kalman and alpha-beta filters (depends on //clim:container)
+  ├── hash             # CityHash, MurmurHash implementations
+  ├── math             # Quaternion, numerical utilities
+  ├── os               # Aligned malloc, barriers, OS utilities
+  ├── path             # Cross-platform path handling (defines HAS_STD_FS on non-Windows)
+  ├── reflection       # Reflection registry (depends on //clim:string)
+  ├── string           # String splitting, stripping, const_string
+  ├── vt               # Vector math (GEMM, neural network ops; depends on //clim:traits)
+  └── zip              # Zip utility functions
 
 vila/           # Core library components
-  ├── config/          # JSON-based configuration system
-  ├── graph/            # Template header-only DAG (dag.h, graph.h, route.h, traversal.h)
-  ├── hook/            # Windows DLL hooking (detours)
-  ├── logging/         # Logger with WPP support (code_location, logger)
-  ├── profiling/       # ITT, timer, trace utilities
-  ├── status/          # Status and StatusOr error handling
-  ├── widget/          # (UI components)
-  └── bazel/           # Bazel-specific build rules and toolchains
+  ├── config           # JSON-based configuration system
+  ├── graph            # Template header-only DAG library (dag.h, digraph.h, graph.h, node.h, route.h, traversal.h)
+  ├── hook             # Windows DLL hooking via Detours library
+  ├── logging          # Logger with WPP support (code_location, logger)
+  ├── profiling        # ITT instrumentation, timer, trace utilities
+  ├── status           # Status and StatusOr error handling
+  └── widget           # Registration tokens
 
-python/         # Python bindings via nanobind/pybind11
-tests/           # GoogleTest-based C++ tests
+bazel/          # Bazel-specific build rules and toolchains
+python/         # Python utilities (vila.core, vila.arith.random)
+tests/          # GoogleTest-based C++ tests
 ```
 
 ## Key Dependencies (via Bazel)
 
 - `fmt` (12.1.0) - Formatting library
-- `spdlog` - Logging library
-- `googletest` - Testing framework
-- `google_benchmark` - Benchmarking
-- `rules_foreign_cc` - CMake/ ninja build support
+- `spdlog` - Logging library (loaded via extension)
+- `googletest` (1.17.0) - Testing framework
+- `google_benchmark` (1.9.2) - Benchmarking
+- `rangev3` - Range library (for C++20 `range_test`)
+- `ittapi` - Intel ITT instrumentation
+- `tvm_ffi` - TVM FFI support (optional, requires `pip install apache-tvm-ffi`)
+
+## Custom Bazel Rules
+
+The project provides custom build rules in `bazel/vila/vila.bzl`:
+
+- `vila_cc_library` - Adds default copts
+- `vila_cc_binary` - Adds default copts/linkopts, defaults to `linkstatic=True`
+- `vila_cc_test` - Adds C++17 + Unicode copts, defaults to `linkstatic=True`
+- `vila_dll_library` - Imports Windows DLL dependencies
+- `vila_so_library` - Imports Linux shared library dependencies
 
 ## Testing
 
@@ -101,11 +114,9 @@ pytest --cov=python/vila python/tests
 
 ## Windows-Specific Notes
 
-- Default C++ standard: C++17
-- Windows WPP logging disabled by default (see commit ed44f79)
-- Windows-specific configs use `select()` with `//conditions:default` since some build configs are Windows-only
-- The `range_test` is Windows-only and requires C++20
-
-## Editor Setup
-
-The project includes `.vscode/` settings for convenience with bazelized projects.
+- Default C++ standard: C++17 (`/std:c++17` in `.bazelrc`)
+- Windows WPP logging disabled by default (controlled by `--enable_wpp` flag)
+- Windows-specific configs use `select()` with `//conditions:default`
+- `range_test` is Windows-only and requires C++20
+- Use `/FC` flag for `__FILE__` to expand to full Windows path (see `const_string_test`)
+- `.bazelrc` uses `--spawn_strategy=local` to work around sandbox issues

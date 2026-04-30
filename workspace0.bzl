@@ -16,16 +16,17 @@ limitations under the License.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-def workspace(skylib = True, rules_cc = True, rules_foreign_cc = True, rules_python = True, pybind11 = True, nanobind = True):
+def workspace(skylib = True, rules_cc = True, rules_foreign_cc = True, rules_python = True, rules_shell = True):
     """Declare basic workspace dependency
+
+    Bazel rules
 
     Args:
         skylib: Whether to include Bazel Skylib.
         rules_cc: Whether to include Bazel Rules for C/C++.
         rules_foreign_cc: Whether to include Bazel Rules for Foreign C/C++.
         rules_python: Whether to include Bazel Rules for Python.
-        pybind11: Whether to include Pybind11.
-        nanobind: Whether to include nanobind.
+        rules_shell: Whether to include Bazel Rules for Shell.
     """
 
     # https://github.com/bazelbuild/bazel-skylib/releases
@@ -78,66 +79,12 @@ def workspace(skylib = True, rules_cc = True, rules_foreign_cc = True, rules_pyt
             url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/%s.tar.gz" % rules_python_version,
         )
 
-    # https://github.com/pybind/pybind11_bazel/releases
-    pybind11_version = "3.0.0"
-    if pybind11:
+    # https://github.com/bazelbuild/rules_shell/releases
+    rules_shell_version = "0.8.0"
+    if rules_shell:
         http_archive(
-            name = "pybind11_bazel",
-            integrity = "sha256-DS8PvRhMzZS4UpQ/kSw96H5f9jJbqcN+r+f0eTAmP9w=",
-            strip_prefix = "pybind11_bazel-%s" % pybind11_version,
-            url = "https://github.com/pybind/pybind11_bazel/archive/refs/tags/v%s.tar.gz" % pybind11_version,
-        )
-
-        # https://github.com/pybind/pybind11/releases
-        pybind11_major = int(pybind11_version.split(".")[0])
-        pybind11_minor = int(pybind11_version.split(".")[1])
-        http_archive(
-            name = "pybind11",
-            build_file = "@pybind11_bazel//:%s" % ("pybind11.BUILD" if (pybind11_major <= 2 and pybind11_minor <= 11) else "pybind11-BUILD.bazel"),
-            integrity = "sha256-RTsaPismbDrp2ockEcrbbWk6wYBjvXMibZbPtwFaIAw=",
-            strip_prefix = "pybind11-%s" % pybind11_version,
-            url = "https://github.com/pybind/pybind11/archive/refs/tags/v%s.tar.gz" % pybind11_version,
-        )
-
-    if nanobind:
-        nanobind_version = "2.10.2"
-        http_archive(
-            name = "nanobind_bazel",
-            integrity = "sha256-QJeB39Bx/m2i79HP+z9okTWEN5t4CcIRwFzJapnJmoY=",
-            strip_prefix = "nanobind-bazel-%s" % nanobind_version,
-            url = "https://github.com/nicholasjng/nanobind-bazel/archive/refs/tags/v%s.tar.gz" % nanobind_version,
-        )
-
-        robin_map_version = "1.4.0"
-        http_archive(
-            name = "robin-map",
-            integrity = "sha256-eTDb+WNKz8Amhth/YVwPTzMTWUgTC4kiMxwW2QoDJQw=",
-            strip_prefix = "robin-map-%s" % robin_map_version,
-            url = "https://github.com/Tessil/robin-map/archive/refs/tags/v%s.tar.gz" % robin_map_version,
-            build_file_content = """load("@rules_cc//cc:cc_library.bzl", "cc_library")
-
-config_setting(
-    name = "msvc_compiler",
-    flag_values = {"@bazel_tools//tools/cpp:compiler": "msvc-cl"},
-)
-
-cc_library(
-    name = "robin-map",
-    hdrs = glob(["include/tsl/*.h"]),
-    copts = select({
-        ":msvc_compiler": ["/std:c++17"],
-        "//conditions:default": ["--std=c++17"],
-    }),
-    strip_include_prefix = "include/",
-    visibility = ["//visibility:public"],
-)
-""",
-        )
-
-        http_archive(
-            name = "nanobind",
-            build_file = "@nanobind_bazel//:nanobind.BUILD",
-            integrity = "sha256-W7f4ZvbJxkQFMItp3n52gdj3eTI+NFvXGgAZnB6uwHM=",
-            strip_prefix = "nanobind-%s" % nanobind_version,
-            url = "https://github.com/wjakob/nanobind/archive/refs/tags/v%s.tar.gz" % nanobind_version,
+            name = "rules_shell",
+            sha256 = "20721f63908879c083f94869e618ea8d4ff5edb91ff9a72a2ebee357fdbc352d",
+            strip_prefix = "rules_shell-%s" % rules_shell_version,
+            url = "https://github.com/bazelbuild/rules_shell/archive/refs/tags/v%s.tar.gz" % rules_shell_version,
         )

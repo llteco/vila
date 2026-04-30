@@ -8,7 +8,7 @@ Convenient object library for vila source code
 
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_import", "cc_library", "cc_test")
 load(
-    "@vila//vila/bazel/vila:compile_options.bzl",
+    "@vila//bazel/vila:compile_options.bzl",
     "CXX_STD_17",
     "DEFAULT_COPTS",
     "DEFAULT_LINKOPTS",

@@ -43,15 +43,15 @@ http_archive(
     url = "https://github.com/llteco/vila/archive/{commit}.zip",
 )
 
-load("@vila//vila:workspace0.bzl", vila_workspace0 = "workspace")
+load("@vila//:workspace0.bzl", vila_workspace0 = "workspace")
 
 vila_workspace0()
 
-load("@vila//vila:workspace1.bzl", vila_workspace1 = "workspace")
+load("@vila//:workspace1.bzl", vila_workspace1 = "workspace")
 
 vila_workspace1()
 
-load("@vila//vila:workspace2.bzl", vila_workspace2 = "workspace")
+load("@vila//:workspace2.bzl", vila_workspace2 = "workspace")
 
 vila_workspace2()
 

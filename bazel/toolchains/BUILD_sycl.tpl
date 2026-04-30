@@ -6,7 +6,7 @@ E-mail: wenyitang@outlook.com
 custom cc toolchains for Windows
 """
 
-load("@vila//vila/bazel/toolchains:sycl_cc_toolchain_config.bzl", "cc_toolchain_config")
+load("@vila//bazel/toolchains:sycl_cc_toolchain_config.bzl", "cc_toolchain_config")
 
 package(default_visibility = ["//visibility:public"])
 
