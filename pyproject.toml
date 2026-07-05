@@ -12,8 +12,43 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-[tool.uv.workspace]
-members = ["python"]
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vila"
+description = "Commonly used Python libraries"
+readme = "python/README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Wenyi Tang", email = "wenyitang@outlook.com" }]
+license = { file = "python/LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version"]
+dependencies = ["numpy"]
+
+[project.urls]
+Home = "https://github.com/llteco/vila"
+Docs = "https://llteco.github.io/vila"
+
+[project.optional-dependencies]
+test = ["pre-commit", "pytest", "pytest-cov", "pooch"]
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["vila*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "vila.__version__" }
+
+[dependency-groups]
+dev = [
+    "apache-tvm-ffi>=0.1.12",
+    "pooch>=1.9.0",
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]
 
 [tool.pyright]
 include = ["python"]
