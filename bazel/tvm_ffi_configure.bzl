@@ -101,45 +101,88 @@ def _tvm_ffi_configure(repository_ctx):
     repository_ctx.symlink(include_dir, "include")
     repository_ctx.symlink(dlpack_dir, "dlpack")
 
-    # Step 6: Symlink the import library for linking
-    # On Windows, we need the .lib file to link against TVM FFI at compile time.
-    # The .dll is loaded at runtime via tvm_ffi.load_module() in Python.
-    lib_files_srcs = ""
-    if lib_files:
-        # Take the first library file (typically the import library)
-        for lib_file in lib_files:
-            # Create symlink to the .lib file
-            lib_name = repository_ctx.path(lib_file).basename
-            repository_ctx.symlink(lib_file, lib_name)
+    # Step 6: Symlink library files and detect platform-specific binaries.
+    # --libfiles returns: .lib (Windows import lib), .so (Linux), .dylib (macOS).
+    # On Windows, the runtime .dll is a sibling of the .lib in the same directory.
+    win_implib = None
+    win_dll = None
+    unix_shared = None  # .so or .dylib
 
-            # Format for BUILD file - use filegroup for proper handling
-            lib_files_srcs += '"%s",' % lib_name
+    for lib_file in lib_files:
+        lib_path = repository_ctx.path(lib_file)
+        lib_name = lib_path.basename
+        repository_ctx.symlink(lib_file, lib_name)
+
+        if lib_name.endswith(".lib"):
+            win_implib = lib_name
+            dll_name = lib_name[:-4] + ".dll"
+            dll_path = lib_path.dirname.get_child(dll_name)
+            if dll_path.exists:
+                repository_ctx.symlink(str(dll_path), dll_name)
+                win_dll = dll_name
+        elif lib_name.endswith(".so") or lib_name.endswith(".dylib"):
+            unix_shared = lib_name
 
 
-    # Step 7: Generate BUILD file
-    # The BUILD file defines a cc_library that propagates include paths.
-    # Using includes (not copts) ensures paths propagate to dependent targets.
-    # Note: TVM FFI is a pre-built binary, so we don't compile any source files.
-    # The library is loaded at runtime via dlopen/LoadLibrary from Python.
+    # Step 7: Generate BUILD file with platform-specific cc_import targets.
+    # Each cc_import pulls the shared library into dependents' runfiles for both
+    # link-time and runtime. The aggregating cc_library propagates include paths
+    # and selects the right import for the host platform via select().
+    imports = ""
+    select_branches = ""
+
+    if win_implib and win_dll:
+        imports += """
+cc_import(
+    name = "tvm_ffi_dll",
+    interface_library = "{implib}",
+    shared_library = "{dll}",
+    target_compatible_with = ["@platforms//os:windows"],
+    visibility = ["//visibility:private"],
+)
+""".format(implib = win_implib, dll = win_dll)
+        select_branches += '\n        "@platforms//os:windows": [":tvm_ffi_dll"],'
+
+    if unix_shared and unix_shared.endswith(".so"):
+        imports += """
+cc_import(
+    name = "tvm_ffi_so",
+    shared_library = "{so}",
+    target_compatible_with = ["@platforms//os:linux"],
+    visibility = ["//visibility:private"],
+)
+""".format(so = unix_shared)
+        select_branches += '\n        "@platforms//os:linux": [":tvm_ffi_so"],'
+
+    if unix_shared and unix_shared.endswith(".dylib"):
+        imports += """
+cc_import(
+    name = "tvm_ffi_dylib",
+    shared_library = "{dylib}",
+    target_compatible_with = ["@platforms//os:osx"],
+    visibility = ["//visibility:private"],
+)
+""".format(dylib = unix_shared)
+        select_branches += '\n        "@platforms//os:osx": [":tvm_ffi_dylib"],'
+
     build_content = """
 package(default_visibility = ["//visibility:public"])
 
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
-
+load("@rules_cc//cc:defs.bzl", "cc_import", "cc_library")
+{imports}
 cc_library(
     name = "tvm_ffi",
-    # Relative paths via symlinked directories - Bazel requires this
     includes = [
         "include",
         "dlpack",
     ],
-    # Link against TVM FFI import library (.lib on Windows)
-    # {lib_files_srcs} is intentionally left without leading comma if empty
-    srcs = [{lib_files_srcs}],
-    visibility = ["//visibility:public"],
+    deps = select({{{select}
+        "//conditions:default": [],
+    }}),
 )
 """.format(
-        lib_files_srcs = lib_files_srcs,
+        imports = imports,
+        select = select_branches,
     )
 
     # Write the generated BUILD file to the external repository root
