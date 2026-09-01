@@ -209,6 +209,10 @@ load("@rules_cc//cc:defs.bzl", "cc_import", "cc_library")
 {imports}
 cc_library(
     name = "tvm_ffi",
+    hdrs = glob([
+        "include/**",
+        "dlpack/**",
+    ]),
     includes = [
         "include",
         "dlpack",

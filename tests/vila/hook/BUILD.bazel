@@ -19,7 +19,10 @@ load("@rules_cc//cc:cc_import.bzl", "cc_import")
 
 cc_binary(
     name = "dll_to_hook",
-    srcs = ["dll_to_hook.cc"],
+    srcs = [
+        "dll_to_hook.cc",
+        "dll_to_hook.h",
+    ],
     defines = ["DLL_EXPORT"],
     includes = ["."],
     linkopts = [

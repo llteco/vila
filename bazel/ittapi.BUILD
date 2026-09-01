@@ -16,7 +16,9 @@ cc_library(
     ]),
     hdrs = [
         "include/ittnotify.h",
+        "include/ittnotify-zca.h",
         "include/jitprofiling.h",
+        "include/legacy/ittnotify.h",
         "include/libittnotify.h",
     ],
     defines = ["VILA_ITT_ENABLED=1"],

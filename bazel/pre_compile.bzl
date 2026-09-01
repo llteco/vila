@@ -48,6 +48,8 @@ Ref:
 3. https://learn.microsoft.com/en-us/cpp/build/reference/yu-use-precompiled-header-file
 """
 
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
 def _make_pch_impl(ctx):
     ctx.actions.write(
         output = ctx.outputs.pch_cxx,
@@ -88,11 +90,11 @@ def pch_library(name, pch_hdr, deps = [], cc_library_cb = None):
     )
     pch_lbl = Label(pch_hdr)
     pch_path = "$(BINDIR)/" + pch_lbl.package.replace("/", "_") + "_" + pch_lbl.name + ".pch"
-    cc_library = native.cc_library if cc_library_cb == None else cc_library_cb
-    cc_library(
+    cc_library_rule = cc_library if cc_library_cb == None else cc_library_cb
+    cc_library_rule(
         name = name,
         srcs = [":" + name + "_pch"],
-        hdrs = [pch_header],
+        hdrs = [pch_header, pch_hdr],
         copts = [
             "/Yc" + pch_header,
             "/FI" + pch_header,
