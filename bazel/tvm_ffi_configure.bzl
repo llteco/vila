@@ -28,6 +28,46 @@ Example in WORKSPACE:
     tvm_ffi_configure(name = "tvm_ffi")
 """
 
+def _lookup_env_var(env, name, default = None):
+    for key, value in env.items():
+        if name.lower() == key.lower():
+            return value
+    return default
+
+def _find_python(repository_ctx):
+    """Locate a usable Python interpreter.
+
+    Bazel 8's repository_ctx.which() rejects the 0-byte "app execution alias"
+    stubs (python.exe/python3.exe) that Microsoft places on PATH, so fall back
+    to the real interpreter install under %LOCALAPPDATA%\\Python.
+    """
+    if repository_ctx.attr.python:
+        p = repository_ctx.path(repository_ctx.attr.python)
+        if p.exists:
+            return p
+
+    for name in ["python3", "python"]:
+        p = repository_ctx.which(name)
+        if p and p.exists:
+            return p
+
+    if repository_ctx.os.name.lower().startswith("windows"):
+        localappdata = _lookup_env_var(repository_ctx.os.environ, "LOCALAPPDATA")
+        if localappdata:
+            python_dir = repository_ctx.path(localappdata).get_child("Python")
+            if python_dir.exists:
+                # Prefer newest version directory, mirroring install layout:
+                # <LOCALAPPDATA>\\Python\\pythoncore-<ver>\\python.exe
+                versions = sorted(
+                    [d for d in python_dir.readdir() if d.get_child("python.exe").exists],
+                    key = lambda d: d.basename,
+                    reverse = True,
+                )
+                if versions:
+                    return versions[0].get_child("python.exe")
+
+    return None
+
 def _tvm_ffi_configure(repository_ctx):
     """Repository rule implementation to locate TVM FFI from pip installation.
 
@@ -47,13 +87,10 @@ def _tvm_ffi_configure(repository_ctx):
     """
 
     # Step 1: Find Python executable
-    # This is the Python that rules_python registers via python_register_toolchains
-    python_path = repository_ctx.which("python3")
-    if not python_path:
-        python_path = repository_ctx.which("python")
+    python_path = _find_python(repository_ctx)
 
     # Verify Python was found
-    if not python_path or not python_path.exists:
+    if not python_path:
         fail(
             "Python not found. Please either:\n" +
             "1. Install apache-tvm-ffi: pip install apache-tvm-ffi\n" +
@@ -191,4 +228,9 @@ cc_library(
 # Define the repository rule for Bazel
 # Repository rules are used to fetch and configure external dependencies.
 # This rule is called once per Bazel invocation to set up the TVM FFI dependency.
-tvm_ffi_configure = repository_rule(implementation = _tvm_ffi_configure)
+tvm_ffi_configure = repository_rule(
+    implementation = _tvm_ffi_configure,
+    attrs = {
+        "python": attr.string(doc = "Explicit path to the Python interpreter. If unset, auto-discovered."),
+    },
+)

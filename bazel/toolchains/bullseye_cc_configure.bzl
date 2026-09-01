@@ -87,9 +87,9 @@ def _resolve_labels(repository_ctx, labels):
 def _bullseye_configure(repository_ctx):
     paths = _resolve_labels(repository_ctx, [
         "@vila//bazel/toolchains:BUILD_bullseye.tpl",
-        "@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl",
-        "@bazel_tools//tools/cpp:vc_installation_error.bat.tpl",
-        "@bazel_tools//tools/cpp:clang_installation_error.bat.tpl",
+        "@rules_cc//cc/private/toolchain:windows_cc_toolchain_config.bzl",
+        "@rules_cc//cc/private/toolchain:vc_installation_error.bat.tpl",
+        "@rules_cc//cc/private/toolchain:clang_installation_error.bat.tpl",
     ])
 
     if is_windows(repository_ctx):

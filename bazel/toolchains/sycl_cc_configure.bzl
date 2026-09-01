@@ -151,15 +151,15 @@ def _sycl_configure(repository_ctx):
         "@vila//bazel/toolchains:BUILD_sycl.tpl",
         "@vila//bazel/toolchains:BUILD_sycl_unix.tpl",
         # required by msvc
-        "@bazel_tools//tools/cpp:windows_cc_toolchain_config.bzl",
-        "@bazel_tools//tools/cpp:vc_installation_error.bat.tpl",
-        "@bazel_tools//tools/cpp:clang_installation_error.bat.tpl",
+        "@rules_cc//cc/private/toolchain:windows_cc_toolchain_config.bzl",
+        "@rules_cc//cc/private/toolchain:vc_installation_error.bat.tpl",
+        "@rules_cc//cc/private/toolchain:clang_installation_error.bat.tpl",
         # required by unix
-        "@bazel_tools//tools/cpp:generate_system_module_map.sh",
-        "@bazel_tools//tools/cpp:armeabi_cc_toolchain_config.bzl",
-        "@bazel_tools//tools/cpp:unix_cc_toolchain_config.bzl",
-        "@bazel_tools//tools/cpp:linux_cc_wrapper.sh.tpl",
-        "@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl",
+        "@rules_cc//cc/private/toolchain:generate_system_module_map.sh",
+        "@rules_cc//cc/private/toolchain:armeabi_cc_toolchain_config.bzl",
+        "@rules_cc//cc/private/toolchain:unix_cc_toolchain_config.bzl",
+        "@rules_cc//cc/private/toolchain:linux_cc_wrapper.sh.tpl",
+        "@rules_cc//cc/private/toolchain:osx_cc_wrapper.sh.tpl",
     ])
 
     repo_name = repository_ctx.name.split("~")[-1]

@@ -15,7 +15,7 @@
 """Configuring the C++ toolchain on Unix platforms."""
 
 load(
-    "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
+    "@rules_cc//cc/private/toolchain:lib_cc_configure.bzl",
     "auto_configure_fail",
     "auto_configure_warning",
     "auto_configure_warning_maybe",
@@ -314,12 +314,12 @@ def find_cc(repository_ctx, overriden_tools):
 def configure_unix_toolchain(repository_ctx, paths, cpu_value, overriden_tools):
     """Configure C++ toolchain on Unix platforms."""
     repository_ctx.symlink(
-        paths["@bazel_tools//tools/cpp:unix_cc_toolchain_config.bzl"],
+        paths["@rules_cc//cc/private/toolchain:unix_cc_toolchain_config.bzl"],
         "cc_toolchain_config.bzl",
     )
 
     repository_ctx.symlink(
-        paths["@bazel_tools//tools/cpp:armeabi_cc_toolchain_config.bzl"],
+        paths["@rules_cc//cc/private/toolchain:armeabi_cc_toolchain_config.bzl"],
         "armeabi_cc_toolchain_config.bzl",
     )
 
@@ -380,7 +380,7 @@ def configure_unix_toolchain(repository_ctx, paths, cpu_value, overriden_tools):
     ))
 
     cc_wrapper_src = (
-        "@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl" if darwin else "@bazel_tools//tools/cpp:linux_cc_wrapper.sh.tpl"
+        "@rules_cc//cc/private/toolchain:osx_cc_wrapper.sh.tpl" if darwin else "@rules_cc//cc/private/toolchain:linux_cc_wrapper.sh.tpl"
     )
     repository_ctx.template(
         "cc_wrapper.sh",
@@ -524,7 +524,7 @@ def configure_unix_toolchain(repository_ctx, paths, cpu_value, overriden_tools):
         repository_ctx.file("module.modulemap", _generate_system_module_map(
             repository_ctx,
             builtin_include_directories,
-            paths["@bazel_tools//tools/cpp:generate_system_module_map.sh"],
+            paths["@rules_cc//cc/private/toolchain:generate_system_module_map.sh"],
         ))
     extra_flags_per_feature = {}
     if is_clang:
