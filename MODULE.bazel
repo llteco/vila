@@ -59,16 +59,12 @@ use_repo(ittapi_ext, "ittapi")
 hedron_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "hedron_extension")
 use_repo(hedron_ext, "hedron_compile_commands")
 
-sycl_config_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "sycl_configure_extension")
-use_repo(sycl_config_ext, "local_config_sycl")
+# SYCL is opt-in: consumers must configure and register the SYCL toolchain
+# explicitly. To enable:
+#   sycl_config_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "sycl_configure_extension")
+#   use_repo(sycl_config_ext, "local_config_sycl")
+#   register_toolchains("@local_config_sycl//:cc-toolchain-x64_sycl")
 
 # TVM FFI support (optional - requires: pip install apache-tvm-ffi)
 tvm_ffi_ext = use_extension("@vila//bazel/bzlmod:extensions.bzl", "tvm_ffi_extension")
 use_repo(tvm_ffi_ext, "tvm_ffi")
-
-register_toolchains(
-    # to use sycl specify: --config=sycl
-    "@local_config_sycl//:cc-toolchain-x64_sycl",
-    # Comment out the following line to use the bullseye on Windows
-    # "@local_config_bullseye//:cc-toolchain-x64_windows",
-)
