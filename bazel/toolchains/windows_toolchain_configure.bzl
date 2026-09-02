@@ -6,7 +6,7 @@ E-mail: wenyi.tang@intel.com
 """
 
 load(
-    "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
+    "@rules_cc//cc/private/toolchain:lib_cc_configure.bzl",
     "auto_configure_fail",
     "auto_configure_warning",
     "auto_configure_warning_maybe",
@@ -15,7 +15,7 @@ load(
     "write_builtin_include_directory_paths",
 )
 load(
-    "@bazel_tools//tools/cpp:windows_cc_configure.bzl",
+    "@rules_cc//cc/private/toolchain:windows_cc_configure.bzl",
     "find_llvm_path",
     "find_llvm_tool",
     "find_msvc_tool",
@@ -244,7 +244,7 @@ def get_msvc_vars(repository_ctx, paths, target_arch = "x64", msvc_vars_x64 = No
     if not vc_path:
         repository_ctx.template(
             "vc_installation_error_" + target_arch + ".bat",
-            paths["@bazel_tools//tools/cpp:vc_installation_error.bat.tpl"],
+            paths["@rules_cc//cc/private/toolchain:vc_installation_error.bat.tpl"],
             {"%{vc_error_message}": ""},
         )
     else:
@@ -260,7 +260,7 @@ def get_msvc_vars(repository_ctx, paths, target_arch = "x64", msvc_vars_x64 = No
             ])
             repository_ctx.template(
                 "vc_installation_error_" + target_arch + ".bat",
-                paths["@bazel_tools//tools/cpp:vc_installation_error.bat.tpl"],
+                paths["@rules_cc//cc/private/toolchain:vc_installation_error.bat.tpl"],
                 {"%{vc_error_message}": message},
             )
 
@@ -356,7 +356,7 @@ def get_clang_cl_vars(repository_ctx, paths, msvc_vars, target_arch):
     elif not llvm_path:
         repository_ctx.template(
             "clang_installation_error.bat",
-            paths["@bazel_tools//tools/cpp:clang_installation_error.bat.tpl"],
+            paths["@rules_cc//cc/private/toolchain:clang_installation_error.bat.tpl"],
             {"%{clang_error_message}": ""},
         )
         error_script = "clang_installation_error.bat"
@@ -372,7 +372,7 @@ def get_clang_cl_vars(repository_ctx, paths, msvc_vars, target_arch):
             ])
             repository_ctx.template(
                 "clang_installation_error.bat",
-                paths["@bazel_tools//tools/cpp:clang_installation_error.bat.tpl"],
+                paths["@rules_cc//cc/private/toolchain:clang_installation_error.bat.tpl"],
                 {"%{clang_error_message}": message},
             )
             error_script = "clang_installation_error.bat"

@@ -6,7 +6,7 @@ E-mail: wenyitang@outlook.com
 Locate Windows Driver Kit (WDK)
 """
 
-load("@bazel_tools//tools/cpp:windows_cc_configure.bzl", "find_vc_path", "setup_vc_env_vars")
+load("@rules_cc//cc/private/toolchain:windows_cc_configure.bzl", "find_vc_path", "setup_vc_env_vars")
 
 def _wdk_configure(ctx):
     vc_path = find_vc_path(ctx)

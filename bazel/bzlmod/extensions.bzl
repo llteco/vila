@@ -47,6 +47,7 @@ def load_rangev3(ctx):
     rangev3_version = "53c40dd628450c977ee1558285ff43e0613fa7a9"
     http_archive(
         name = "rangev3",
+        build_file = "@vila//bazel:rangev3.BUILD",
         integrity = "sha256-3uvT1HqOcMb2maFCPul05Ku/AWqCAZEdYFQe4eRWFFQ=",
         strip_prefix = "range-v3-%s" % rangev3_version,
         url = "https://github.com/ericniebler/range-v3/archive/%s.zip" % rangev3_version,

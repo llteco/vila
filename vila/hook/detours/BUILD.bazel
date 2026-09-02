@@ -16,12 +16,38 @@ limitations under the License.
 
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
+# disasm.cpp is both compiled standalone (provides the host-arch
+# DetourCopyInstruction used by detours.cpp) and #included by the disol*.cpp
+# files (which redefine it as DetourCopyInstructionX86/X64/... via the
+# DETOURS_*_OFFLINE_LIBRARY macros). Bazel 9 requires an #included .cpp to be
+# listed in textual_hdrs, so it cannot also live in srcs of the same rule;
+# compile it in its own library and depend on it.
+cc_library(
+    name = "disasm",
+    srcs = ["disasm.cpp"],
+    hdrs = [
+        "detours.h",
+        "detver.h",
+    ],
+    copts = [
+        "/W4",
+        "/Z7",
+        "/Gy",
+        "/Gm-",
+        "/Zl",
+        "/Od",
+        "/FS",
+    ],
+    includes = ["."],
+    target_compatible_with = ["@platforms//os:windows"],
+    visibility = ["//visibility:private"],
+)
+
 cc_library(
     name = "detours",
     srcs = [
         "creatwth.cpp",
         "detours.cpp",
-        "disasm.cpp",
         "disolarm.cpp",
         "disolarm64.cpp",
         "disolia64.cpp",
@@ -49,6 +75,10 @@ cc_library(
     ],
     includes = ["."],
     target_compatible_with = ["@platforms//os:windows"],
-    textual_hdrs = ["uimports.cpp"],
+    textual_hdrs = [
+        "disasm.cpp",
+        "uimports.cpp",
+    ],
     visibility = ["//visibility:public"],
+    deps = [":disasm"],
 )
