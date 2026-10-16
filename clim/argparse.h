@@ -247,6 +247,9 @@ class Argument {
 /** @class ArgumentParser
  * @brief Object for parsing command line strings into c++ objects.
  *
+ * A lone "--" terminates the option list: the remaining arguments are
+ * always taken as position arguments (e.g. paths starting with "-").
+ *
  * @example
  * auto parser = ArgumentParser()
  * parser.AddArgument("--foo").WithDefault(100).Required();
@@ -436,15 +439,21 @@ class ArgumentParser {
     }
 
     size_t position = 0;
+    // a lone "--" ends the option list; only the first one is a separator
+    bool end_of_options = false;
     for (int i = 1; i < argc; i++) {
       std::string arg = argv[i];
-      if (arg.size() > 2 && arg.substr(0, 2) == "--") {
+      if (!end_of_options && arg == "--") {
+        end_of_options = true;
+        continue;
+      }
+      if (!end_of_options && arg.size() > 2 && arg.substr(0, 2) == "--") {
         auto kv = read(arg.substr(2), i + 1 == argc ? "" : argv[i + 1]);
         argopt.insert(kv);
-      } else if (arg.size() > 1 && arg[0] == '-') {
+      } else if (!end_of_options && arg.size() > 1 && arg[0] == '-') {
         auto kv = read(arg.substr(1), i + 1 == argc ? "" : argv[i + 1]);
         argopt.insert(kv);
-      } else if (arg != "-" && arg != "--" && position < pos_args_.size()) {
+      } else if (arg != "-" && position < pos_args_.size()) {
         argopt.insert(std::make_pair(pos_args_[position].name_, arg));
         position++;
       }
