@@ -53,6 +53,37 @@ TEST(Argparse, ParsePosition) {
   EXPECT_EQ(args.count("pos3"), 0);
 }
 
+TEST(Argparse, DoubleDashSeparator) {
+  ArgumentParser parser;
+  parser.AddArgument("--foo").WithDefault(1);
+  parser.AddArgument("pos1");
+  const char* argv[] = {__FUNCTION__, "--foo=2", "--", "-bar"};
+  auto args = parser.Parse(4, argv);
+  EXPECT_EQ(args["foo"].AsLong(), 2);
+  EXPECT_EQ(args["pos1"].AsStr(), "-bar");
+}
+
+TEST(Argparse, DoubleDashAlone) {
+  // a lone "--" is no longer an unknown option named "-"
+  ArgumentParser parser;
+  parser.AddArgument("--foo").WithDefault(1);
+  const char* argv[] = {__FUNCTION__, "--foo=2", "--"};
+  auto args = parser.Parse(3, argv);
+  EXPECT_EQ(args["foo"].AsLong(), 2);
+  EXPECT_TRUE(std::get<1>(parser.ParseKnown(3, argv)).empty());
+}
+
+TEST(Argparse, DoubleDashAfterDoubleDash) {
+  // only the first "--" is a separator; later ones are position arguments
+  ArgumentParser parser;
+  parser.AddArgument("pos1");
+  parser.AddArgument("pos2");
+  const char* argv[] = {__FUNCTION__, "--", "--", "-bar"};
+  auto args = parser.Parse(4, argv);
+  EXPECT_EQ(args["pos1"].AsStr(), "--");
+  EXPECT_EQ(args["pos2"].AsStr(), "-bar");
+}
+
 TEST(Argparse, ParseRequired) {
   ArgumentParser parser;
   parser.AddArgument("--foo").Required();
