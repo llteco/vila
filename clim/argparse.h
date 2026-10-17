@@ -15,6 +15,7 @@
  */
 #ifndef CLIM_ARGPARSE_H_
 #define CLIM_ARGPARSE_H_
+#include <algorithm>
 #include <any>
 #include <cstdint>
 #include <iostream>
@@ -23,6 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -73,28 +75,15 @@ class Argument {
     }
   }
 
-  Argument& WithDefault(int64_t default_value) {
-    def_ = default_value;
-    return *this;
-  }
-
-  Argument& WithDefault(int32_t default_value) {
-    def_ = static_cast<int64_t>(default_value);
-    return *this;
-  }
-
-  Argument& WithDefault(float default_value) {
-    def_ = default_value;
-    return *this;
-  }
-
-  Argument& WithDefault(double default_value) {
-    def_ = static_cast<float>(default_value);
-    return *this;
-  }
-
-  Argument& WithDefault(std::string default_value) {
-    def_ = std::move(default_value);
+  template <typename T>
+  Argument& WithDefault(T default_value) {
+    if constexpr (std::is_integral_v<T>) {
+      def_ = static_cast<int64_t>(default_value);
+    } else if constexpr (std::is_floating_point_v<T>) {
+      def_ = static_cast<float>(default_value);
+    } else {
+      def_ = std::string(std::move(default_value));
+    }
     return *this;
   }
 
@@ -125,6 +114,8 @@ class Argument {
       nargs_ = -1;
     } else if (static_cast<char>(nargs) == '+') {
       nargs_ = 0;
+    } else if (static_cast<char>(nargs) == '?') {
+      nargs_ = -2;
     } else {
       nargs_ = static_cast<int64_t>(nargs);
     }
@@ -215,9 +206,8 @@ class Argument {
     if (nargs_ > 0) {
       if (vals_.size() != static_cast<size_t>(nargs_)) {
         if ((vals_.empty() && required_) || !vals_.empty()) {
-          ss << name_ << " expects " << nargs_ << " values but gets "
-             << vals_.size();
-          if (pos_ >= 0) {
+          ss << name_ << " expects " << nargs_ << " values but gets " << vals_.size();
+          if (full_name_[0] != '-') {
             ss << "\n"
                << "can not specify position argument with --" << name_;
           }
@@ -225,6 +215,8 @@ class Argument {
       }
     } else if (nargs_ == 0 && vals_.empty() && required_) {
       ss << name_ << " expects at least one value but gets none";
+    } else if (nargs_ == -2 && vals_.size() > 1) {
+      ss << name_ << " expects at most one value but gets " << vals_.size();
     }
     if (!ss.str().empty()) {
       err_msg += ss.str() + "\n";
@@ -234,7 +226,6 @@ class Argument {
   }
 
   bool required_ = false;
-  int64_t pos_ = -1;
   action flag_ = action::none;
   std::string name_;
   std::string full_name_;
@@ -249,6 +240,10 @@ class Argument {
  *
  * A lone "--" terminates the option list: the remaining arguments are
  * always taken as position arguments (e.g. paths starting with "-").
+ *
+ * Position arguments are filled left-to-right from the non-option tokens
+ * and support Nargs (N, '+', '*', '?') like python argparse. Option and
+ * position arguments may be interleaved anywhere on the command line.
  *
  * @example
  * auto parser = ArgumentParser()
@@ -287,7 +282,6 @@ class ArgumentParser {
       return args_.back();
     }
     pos_args_.emplace_back(arg);
-    pos_args_.back().pos_ = static_cast<int64_t>(pos_args_.size() - 1);
     check(pos_args_.back().name_);
     return pos_args_.back();
   }
@@ -305,19 +299,24 @@ class ArgumentParser {
   ) {
     Arguments args;
     std::map<std::string, std::string> unknown_args;
+    std::vector<std::string> extras;
     for (auto& known_args : args_) {
       args[known_args.name_] = known_args;
     }
     for (auto& known_args : pos_args_) {
       args[known_args.name_] = known_args;
     }
-    auto raw_args = parseArgs(argc, argv);
+    auto raw_args = parseArgs(argc, argv, extras);
     for (auto&& [key, value] : raw_args) {
       if (args.count(key)) {
         args[key].setValue(value);
       } else {
         unknown_args[key] = value;
       }
+    }
+    // leftover positional values are unknown to the parser
+    for (auto& extra : extras) {
+      unknown_args[extra] = "";
     }
     std::string err_msg;
     for (auto&& [key, value] : args) {
@@ -391,7 +390,11 @@ class ArgumentParser {
   void PrintHelp() const {
     std::cout << prog_ << " ";
     for (const auto& arg : pos_args_) {
-      std::cout << "<" << arg.name_ << "> ";
+      std::string msg = "<" + arg.name_ + ">";
+      if (maxNargs(arg) != 1) {
+        msg += " ...";
+      }
+      std::cout << msg << " ";
     }
     for (const auto& arg : args_) {
       if (arg != "help") {
@@ -417,28 +420,33 @@ class ArgumentParser {
   }
 
  private:
-  /** @brief parse command line to raw string map. */
+  /** @brief parse command line to raw string map. Extra positional values
+   * that no position argument claims are appended to extras. */
   std::multimap<std::string, std::string> parseArgs(
-      int argc, const char* const* argv
+      int argc, const char* const* argv, std::vector<std::string>& extras
   ) {
     // use multimap to take repeated arguments
     std::multimap<std::string, std::string> argopt;
-
-    auto read = [](std::string_view argvalue, const std::string& nextvalue) {
-      // split two patterns: "--foo=bar", "--foo bar"
-      auto arg_split_equal = StrSplit(argvalue, "=");
-      if (arg_split_equal.size() == 2) {
-        return std::make_pair(arg_split_equal[0], arg_split_equal[1]);
-      } else {
-        return std::make_pair(arg_split_equal[0], nextvalue);
-      }
-    };
 
     if (prog_.empty()) {
       prog_ = argv[0];
     }
 
-    size_t position = 0;
+    auto find_arg = [this](std::string_view key) -> const Argument* {
+      for (const auto& arg : args_) {
+        if (arg.name_ == key) {
+          return &arg;
+        }
+      }
+      return nullptr;
+    };
+    // a token can only be taken as an option value if it does not look
+    // like an option itself ("-" alone is a value, e.g. stdin)
+    auto is_value = [](std::string_view tok) {
+      return tok.size() == 1 || tok[0] != '-';
+    };
+
+    std::vector<std::string> positions;
     // a lone "--" ends the option list; only the first one is a separator
     bool end_of_options = false;
     for (int i = 1; i < argc; i++) {
@@ -447,27 +455,82 @@ class ArgumentParser {
         end_of_options = true;
         continue;
       }
-      if (!end_of_options && arg.size() > 2 && arg.substr(0, 2) == "--") {
-        auto kv = read(arg.substr(2), i + 1 == argc ? "" : argv[i + 1]);
-        argopt.insert(kv);
-      } else if (!end_of_options && arg.size() > 1 && arg[0] == '-') {
-        auto kv = read(arg.substr(1), i + 1 == argc ? "" : argv[i + 1]);
-        argopt.insert(kv);
-      } else if (arg != "-" && position < pos_args_.size()) {
-        argopt.insert(std::make_pair(pos_args_[position].name_, arg));
-        position++;
+      if (!end_of_options && arg.size() > 1 && arg[0] == '-') {
+        // two patterns: "--foo=bar" and "--foo bar"
+        std::string_view full = arg;
+        bool two_dashes = full.substr(0, 2) == "--";
+        std::string_view body = two_dashes ? full.substr(2) : full.substr(1);
+        auto eq = body.find('=');
+        if (eq != std::string_view::npos) {
+          std::string key(body.substr(0, eq));
+          std::string value(body.substr(eq + 1));
+          argopt.insert(std::make_pair(key, value));
+          continue;
+        }
+        const Argument* known = find_arg(body);
+        if (!known || known->IsFlag()) {
+          // flags take no value; unknown options are reported as-is and
+          // keep their following tokens available as position arguments
+          argopt.insert(std::make_pair(std::string(body), ""));
+          continue;
+        }
+        // greedily take the following tokens as values, "--foo a b"
+        int64_t remaining = maxNargs(*known);
+        while (remaining != 0 && i + 1 < argc && is_value(argv[i + 1])) {
+          argopt.insert(std::make_pair(std::string(body), argv[i + 1]));
+          i++;
+          if (remaining > 0) {
+            remaining--;
+          }
+        }
+        continue;
+      }
+      positions.emplace_back(arg);
+    }
+
+    // distribute the collected values to position arguments, reserving the
+    // minimum number of values each remaining position argument needs
+    std::vector<int64_t> reserved(pos_args_.size() + 1, 0);
+    for (size_t k = pos_args_.size(); k-- > 0;) {
+      reserved[k] = reserved[k + 1] + minNargs(pos_args_[k]);
+    }
+    size_t next = 0;
+    for (size_t k = 0; k < pos_args_.size(); k++) {
+      int64_t left = static_cast<int64_t>(positions.size() - next);
+      int64_t avail = left - reserved[k + 1];
+      if (avail < minNargs(pos_args_[k])) {
+        PrintHelp();
+        std::string err_msg;
+        for (size_t j = k; j < pos_args_.size(); j++) {
+          err_msg += pos_args_[j].name_ + ", ";
+        }
+        throw ParseError(err_msg + "is not specified");
+      }
+      int64_t cap = maxNargs(pos_args_[k]);
+      int64_t take = cap < 0 ? avail : std::min(cap, avail);
+      for (int64_t t = 0; t < take; t++) {
+        argopt.insert(std::make_pair(pos_args_[k].name_, positions[next++]));
       }
     }
-    // check number of position arguments
-    if (position != pos_args_.size()) {
-      PrintHelp();
-      std::string err_msg;
-      for (size_t i = position; i < pos_args_.size(); i++) {
-        err_msg += pos_args_[i].name_ + ", ";
-      }
-      throw ParseError(err_msg + "is not specified");
+    for (; next < positions.size(); next++) {
+      extras.emplace_back(positions[next]);
     }
     return argopt;
+  }
+
+  /** @brief minimum number of values an argument must take. */
+  static int64_t minNargs(const Argument& arg) {
+    if (arg.nargs_ == 0) return 1;  // '+'
+    if (arg.nargs_ < 0) return 0;   // '*' and '?'
+    return arg.nargs_;
+  }
+
+  /** @brief maximum number of values an argument can take; a negative
+   * maximum means unlimited. */
+  static int64_t maxNargs(const Argument& arg) {
+    if (arg.nargs_ == 0 || arg.nargs_ == -1) return -1;  // '+' and '*'
+    if (arg.nargs_ == -2) return 1;                      // '?'
+    return arg.nargs_;
   }
 
   void check(const std::string& key) {

@@ -46,11 +46,11 @@ TEST(Argparse, ParsePosition) {
   EXPECT_THROW(parser.Parse(2, argv), ParseError);
   // duplicate --pos1
   EXPECT_THROW(parser.ParseKnown(5, argv), ParseError);
-  auto args = parser.Parse(4, argv);
+  auto args = parser.Parse(3, argv);
   EXPECT_EQ(args["pos1"], "pos1");
   EXPECT_EQ(args["pos2"], "pos2");
-  // pos3 just ignored
-  EXPECT_EQ(args.count("pos3"), 0);
+  // extra positional values now raise, like python argparse
+  EXPECT_THROW(parser.Parse(4, argv), ParseError);
 }
 
 TEST(Argparse, DoubleDashSeparator) {
@@ -195,6 +195,98 @@ TEST(Argparse, ParseDictPositionArgsWithError) {
   };
   ArgumentParser parser;
   parser.AddArgument("pos1");
-  // For now unknown positional args are ignored
-  EXPECT_NO_THROW(parser.ParseDict(dict));
+  // unknown positional args now raise
+  EXPECT_THROW(parser.ParseDict(dict), ParseError);
+}
+
+TEST(Argparse, ParseInterleaved) {
+  // options and position arguments can be interleaved anywhere
+  ArgumentParser parser;
+  parser.AddArgument("--foo").WithDefault(1);
+  parser.AddArgument("--flag").StoreTrue();
+  parser.AddArgument("pos1");
+  parser.AddArgument("pos2");
+  const char* argv[] = {__FUNCTION__, "a", "--foo=2", "b", "--flag"};
+  auto args = parser.Parse(5, argv);
+  EXPECT_EQ(args["pos1"].AsStr(), "a");
+  EXPECT_EQ(args["pos2"].AsStr(), "b");
+  EXPECT_EQ(args["foo"].AsLong(), 2);
+  EXPECT_TRUE(args["flag"]);
+}
+
+TEST(Argparse, OptionValueNotPositional) {
+  // the value of "--foo bar" is consumed by the option only
+  ArgumentParser parser;
+  parser.AddArgument("--foo");
+  parser.AddArgument("pos1");
+  const char* argv[] = {__FUNCTION__, "--foo", "bar", "baz"};
+  auto args = parser.Parse(4, argv);
+  EXPECT_EQ(args["foo"].AsStr(), "bar");
+  EXPECT_EQ(args["pos1"].AsStr(), "baz");
+}
+
+TEST(Argparse, OptionNargsConsumesValues) {
+  ArgumentParser parser;
+  parser.AddArgument("--foo").Nargs(2ULL);
+  parser.AddArgument("pos1");
+  const char* argv[] = {__FUNCTION__, "--foo", "a", "b", "c"};
+  auto args = parser.Parse(5, argv);
+  EXPECT_EQ(args["foo"].Size(), 2U);
+  EXPECT_EQ(args["foo"][0].AsStr(), "a");
+  EXPECT_EQ(args["foo"][1].AsStr(), "b");
+  EXPECT_EQ(args["pos1"].AsStr(), "c");
+}
+
+TEST(Argparse, PositionalNargsNumber) {
+  ArgumentParser parser;
+  parser.AddArgument("pair").Nargs(2ULL);
+  parser.AddArgument("single");
+  const char* argv[] = {__FUNCTION__, "a", "b", "c"};
+  auto args = parser.Parse(4, argv);
+  EXPECT_EQ(args["pair"].Size(), 2U);
+  EXPECT_EQ(args["pair"][0].AsStr(), "a");
+  EXPECT_EQ(args["pair"][1].AsStr(), "b");
+  EXPECT_EQ(args["single"].AsStr(), "c");
+  // "single" left without a value
+  const char* argv2[] = {__FUNCTION__, "a", "b"};
+  EXPECT_THROW(parser.Parse(3, argv2), ParseError);
+}
+
+TEST(Argparse, PositionalNargsPlus) {
+  ArgumentParser parser;
+  parser.AddArgument("src").Nargs('+');
+  parser.AddArgument("dst");
+  const char* argv[] = {__FUNCTION__, "a", "b", "c"};
+  auto args = parser.Parse(4, argv);
+  EXPECT_EQ(args["src"].Size(), 2U);
+  EXPECT_EQ(args["src"][0].AsStr(), "a");
+  EXPECT_EQ(args["src"][1].AsStr(), "b");
+  EXPECT_EQ(args["dst"].AsStr(), "c");
+  // "dst" needs at least one value
+  const char* argv2[] = {__FUNCTION__, "a"};
+  EXPECT_THROW(parser.Parse(2, argv2), ParseError);
+}
+
+TEST(Argparse, PositionalNargsStar) {
+  ArgumentParser parser;
+  parser.AddArgument("cmd");
+  parser.AddArgument("rest").Nargs('*');
+  const char* argv[] = {__FUNCTION__, "run", "a", "b"};
+  auto args = parser.Parse(4, argv);
+  EXPECT_EQ(args["cmd"].AsStr(), "run");
+  EXPECT_EQ(args["rest"].Size(), 2U);
+  EXPECT_EQ(args["rest"][1].AsStr(), "b");
+  // "rest" can be empty
+  const char* argv2[] = {__FUNCTION__, "run"};
+  args = parser.Parse(2, argv2);
+  EXPECT_EQ(args["rest"].Size(), 0U);
+}
+
+TEST(Argparse, PositionalNargsOptional) {
+  ArgumentParser parser;
+  parser.AddArgument("maybe").Nargs('?').WithDefault("none");
+  const char* argv[] = {__FUNCTION__, "a"};
+  EXPECT_EQ(parser.Parse(2, argv)["maybe"].AsStr(), "a");
+  const char* argv2[] = {__FUNCTION__};
+  EXPECT_EQ(parser.Parse(1, argv2)["maybe"].AsStr(), "none");
 }
