@@ -97,6 +97,17 @@ class Argument {
     return *this;
   }
 
+  /**
+   * @brief Mark the argument repeatable (python argparse action="append"):
+   *   repeated occurrences accumulate their values instead of failing the
+   *   exact-count check. Nargs still governs the values each single
+   *   occurrence takes (default 1); Required demands that minimum count.
+   */
+  Argument& Append() {
+    append_ = true;
+    return *this;
+  }
+
   Argument& StoreTrue() {
     flag_ = action::store_true;
     def_ = false;
@@ -204,7 +215,12 @@ class Argument {
   bool check(std::string& err_msg) const {
     std::stringstream ss;
     if (nargs_ > 0) {
-      if (vals_.size() != static_cast<size_t>(nargs_)) {
+      if (append_) {
+        if (required_ && vals_.size() < static_cast<size_t>(nargs_)) {
+          ss << name_ << " expects at least " << nargs_ << " values but gets "
+             << vals_.size();
+        }
+      } else if (vals_.size() != static_cast<size_t>(nargs_)) {
         if ((vals_.empty() && required_) || !vals_.empty()) {
           ss << name_ << " expects " << nargs_ << " values but gets " << vals_.size();
           if (full_name_[0] != '-') {
@@ -226,6 +242,7 @@ class Argument {
   }
 
   bool required_ = false;
+  bool append_ = false;
   action flag_ = action::none;
   std::string name_;
   std::string full_name_;

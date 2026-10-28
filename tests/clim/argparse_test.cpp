@@ -154,6 +154,50 @@ TEST(Argparse, NargsNumber) {
   EXPECT_EQ(parser.Parse(3, argv)["foo"][1].AsLong(), 2);
 }
 
+TEST(Argparse, AppendRepeatable) {
+  // repeated occurrences append instead of erroring on a count mismatch
+  ArgumentParser parser;
+  parser.AddArgument("--param").Append();
+  const char* argv[] = {__FUNCTION__, "--param", "a=1", "--param", "b=2"};
+  auto args = parser.Parse(5, argv);
+  EXPECT_EQ(args["param"].Size(), 2U);
+  EXPECT_EQ(args["param"][0].AsStr(), "a=1");
+  EXPECT_EQ(args["param"][1].AsStr(), "b=2");
+  const char* argv2[] = {__FUNCTION__, "--param=a=1", "--param=b=2"};
+  args = parser.Parse(3, argv2);
+  EXPECT_EQ(args["param"][1].AsStr(), "b=2");
+  // absent is fine when not required
+  EXPECT_EQ(parser.Parse(1, argv2)["param"].Size(), 0U);
+}
+
+TEST(Argparse, AppendWithPositional) {
+  // each occurrence still takes exactly Nargs values, positionals intact
+  ArgumentParser parser;
+  parser.AddArgument("--param").Append();
+  parser.AddArgument("graph");
+  const char* argv[] = {__FUNCTION__, "--param", "a=1", "topo.json",
+                        "--param", "b=2"};
+  auto args = parser.Parse(6, argv);
+  EXPECT_EQ(args["param"].Size(), 2U);
+  EXPECT_EQ(args["graph"].AsStr(), "topo.json");
+}
+
+TEST(Argparse, AppendRequired) {
+  ArgumentParser parser;
+  parser.AddArgument("--param").Append().Required();
+  const char* argv[] = {__FUNCTION__, "--param", "a=1"};
+  EXPECT_THROW(parser.Parse(1, argv), ParseError);
+  EXPECT_EQ(parser.Parse(3, argv)["param"].Size(), 1U);
+}
+
+TEST(Argparse, RepeatWithoutAppend) {
+  // without Append the exact-count check stays strict
+  ArgumentParser parser;
+  parser.AddArgument("--foo");
+  const char* argv[] = {__FUNCTION__, "--foo", "1", "--foo", "2"};
+  EXPECT_THROW(parser.Parse(5, argv), ParseError);
+}
+
 TEST(Argparse, ParseDict) {
   std::map<std::string, std::string> dict = {
       {"foo", "bar"},
