@@ -5,12 +5,6 @@ HeaderFilterRegex: '(^(vila\/.*)(?<!generated)\.h$)|(^clim\/.*\.h$)'
 # except for `readability-function-cognitive-complexity`
 WarningsAsErrors: 'readability-*,bugprone-*,concurrency-*,-readability-function-cognitive-complexity,llvm-*'
 FormatStyle: file
-# AnalyzeTemporaryDtors is an artifact from an older clang-tidy version, notably 6 and below.
-# The corresponding option -analyze-temporary-dtors= was removed, but since a lot of people
-# do -dump-config (which dumps every option), removing AnalyzeTemporaryDtors apparently broke
-# a lot of projects with such generated .clang-tidy, so it was added back for compatibility purposes
-# https://reviews.llvm.org/rG6e76a1b1ff98b27b82689b6294cde1d355be088f.
-AnalyzeTemporaryDtors: false
 # Check list, a prefix of '-' meaning disable items, the latter item will override the former one.
 Checks: >
     -*,
