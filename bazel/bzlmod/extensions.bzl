@@ -34,10 +34,10 @@ def load_spdlog(ctx):
 def load_hedron(ctx):
     # Hedron's Compile Commands Extractor for Bazel (fork'd version)
     # https://github.com/loseall/bazel-compile-commands-extractor
-    hedron_commit = "2c33c1b2a6a06ef9d4a371ba90b7325341a15f39"
+    hedron_commit = "e070583a8c68918445ea9526c56f31cbfc6290c2"
     http_archive(
         name = "hedron_compile_commands",
-        integrity = "sha256-u0AvEvL4uf4pUBZ+LQTekwn+hflpJi/3ZKTOA1K8U6U=",
+        integrity = "sha256-08DHr4d2Bzoaz67wOUhXp5DmU/iPBUrQorwrCiAADYE=",
         strip_prefix = "bazel-compile-commands-extractor-%s" % hedron_commit,
         url = "https://github.com/loseall/bazel-compile-commands-extractor/archive/%s.zip" % hedron_commit,
     )
